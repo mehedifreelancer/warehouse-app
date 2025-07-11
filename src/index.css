@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import "./assets/css/utilities.css";
+@import "./assets/css/table.css";
+@import "./assets/css/button.css";
+@import "./assets//css/sidebar.css";
+@import "./assets//css/modal.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* custom utility class */
+body {
+  font-family: "Public Sans";
+}
+@layer components {
+  button {
+    cursor: pointer;
+  }
+  .Toastify__toast {
+    padding: 0px !important;
+  }
+  .Toastify__close-button {
+    margin-top: 10px !important;
+  }
+  html[data-theme="dark"] .Toastify__close-button {
+    filter: brightness(0) invert(1);
+  }
+}
+
+/* //Direct custom CSS */
+
+.p-paginator {
+  justify-content: end !important;
+  display: flex;
+  gap: 5px;
+  background-color: white;
+  padding: 12px !important;
+}
+.p-paginator-element {
+  background-color: #efeef0;
+  color: #444050;
+  padding: 12px;
+  border-radius: 5px;
+  gap: 15px;
+}
+.p-paginator-pages .p-highlight {
+  background-color: #7367f0 !important;
+  color: white;
+}
+.p-paginator-pages {
+  display: flex;
+  gap: 5px;
+}
+.p-dialog-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important ;
+}
+
+.p-dialog {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.p-chips-token {
+  display: flex;
+  gap: 5px;
+}
+.p-chips-multiple-container {
+  display: flex;
+  gap: 5px;
+}
+
+@layer components {
+  .p-dropdown {
+    @apply p-2 border border-gray-300 dark:border-white rounded;
+  }
+  .p-dropdown-items-wrapper {
+    @apply mt-2  shadow! bg-white dark:bg-[#1e2939] border  border-gray-300 dark:border-gray-900 rounded;
+  }
+
+  .p-dropdown-label {
+    @apply text-sm! text-[#444050] dark:text-[#cAcAcA];
+  }
+
+  .p-dropdown-items {
+    @apply text-sm text-[#444050]  dark:text-[#cAcAcA]  shadow-md rounded;
+  }
+  .p-dropdown-item {
+    @apply p-2   dark:text-[#cAcAcA] hover:bg-gray-200 dark:hover:bg-gray-900 rounded;
+  }
+
+  /* Selected Tree Css  */
+  .p-treeselect {
+    @apply border border-gray-700 dark:border-gray-300 rounded p-2 bg-white dark:bg-[#1e2939];
+  }
+  .p-treeselect-panel {
+    @apply w-[80px] text-[#444050] dark:text-[#cacaca] bg-white dark:bg-[#1e2939] border border-gray-300 dark:border-gray-900 rounded shadow-md;
+  }
+  .p-treeselect-items-wrapper::-webkit-scrollbar {
+    width: 1px; /* For Chrome, Safari, and Edge */
+  }
+  .p-treeselect-label {
+    @apply text-sm text-[#444050] dark:text-[#cACACA];
+  }
+  .p-tree-toggler{
+    @apply mr-[10px]!
+  }
+  .p-treeselect-panel{
+    @apply mt-2
+  }
+  .p-tree .p-treenode-children {
+    @apply pl-4;
+  }
+  .p-tree .p-tree-container{
+    @apply p-[10px]
+  }
+  .p-tree .p-tree-container .p-treenode {
+    padding: 5px;
+    outline: 0 none;
+  }
+  .p-treenode-leaf > .p-treenode-content .p-tree-toggler {
+    visibility: hidden;
+  }
+  .p-treeselect .p-treeselect-clear-icon {
+    right: 2rem;
+  }
+  .p-treeselect-filter-icon{
+    @apply right-[20px]
+  }
+  .p-treeselect-close{
+    @apply right-[10px]!
+  }
+  .p-treenode-leaf{
+    @apply cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-900  rounded;
+  }
+}
+
+
+
+
+.p-inputwrapper-filled {
+  @apply shadow bg-white dark:bg-gray-800 p-[8px] border border-gray-300  rounded;
+}
+.p-paginator {
+  @apply bg-gray-800 rounded-lg p-2 flex items-center justify-end gap-2 mt-5;
+}
+.p-treeselect-trigger svg,
+.filter-area svg {
+  @apply text-gray-500 dark:text-gray-300;
+}
+.p-treeselect-filter-container input {
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg p-1 w-full m-2 ;
+}

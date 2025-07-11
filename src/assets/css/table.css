@@ -1,0 +1,95 @@
+@layer components {
+  .data-table-header {
+    @apply flex bg-[white] justify-between items-center px-2 py-[10px] rounded-t-md  dark:bg-[#1e2939];
+  }
+  .data-table-heading {
+    @apply text-lg font-[600] p-2 text-[#212121] text-[19px] dark:text-[#cACACA];
+  }
+  .data-table {
+    @apply min-w-full divide-y divide-gray-200 bg-white dark:bg-[#1e2939];
+  }
+  .data-table-row {
+    @apply border-b dark:border-gray-900 border-gray-200 hover:bg-gray-200 dark:hover:bg-gray-900;
+  }
+
+  .data-table-column-header {
+    @apply px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-[#cACACA]  border-b dark:border-gray-900 border-gray-200;
+  }
+
+  .data-table-column-body {
+    @apply px-4 py-3 text-left text-sm text-gray-900 text-[13px] dark:text-[#cACACA];
+  }
+  .p-column-header-content {
+    @apply gap-[5px];
+  }
+  .p-datatable-emptymessage {
+    @apply absolute left-1/2  transform -translate-x-1/2 mt-2 text-[#ccc];
+  }
+  .table-search input{
+    @apply border-[#D1D0D4] border-1 relative  py-2 w-[220px] rounded-md px-8 outline-0 dark:border-[#ffffff]  dark:text-[#cACACA];
+  }
+  .p-column-header-content{
+    @apply gap-0;
+  }
+  .p-checkbox-box{
+    display: none;
+
+  }
+
+  /* Datatable paginator================================================================ */
+  .p-paginator {
+    justify-content: end !important;
+    display: flex;
+    gap: 5px;
+    background-color: white;
+    padding: 12px !important;
+  }
+  .p-paginator-element {
+    background-color: #efeef0;
+    color: #444050;
+    padding: 12px;
+    border-radius: 5px;
+    gap: 15px;
+  }
+  html[data-theme="dark"] .p-paginator-element {
+    background-color: #111826 !important;
+    color: #cAcAcA !important;
+  
+  }
+  
+  .p-paginator-pages .p-highlight  {
+    background-color: #1C98D8 !important;
+    color: #cAcAcA !important;
+  
+  }
+  html[data-theme="dark"]  .p-paginator-pages .p-highlight  {
+    background-color: #1C98D8 !important;
+    color: #cAcAcA !important;
+  
+  }
+
+
+  .p-paginator-pages {
+    display: flex;
+    gap: 5px;
+  }
+  .p-dialog-mask {
+    background-color: rgba(0, 0, 0, 0.6) !important ;
+  }
+
+  .p-dialog {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  .p-paginator-bottom {
+    @apply rounded-b-md  dark:!bg-[#1e2939]  dark:!text-white;
+  }
+  .paginator-text {
+    @apply text-[#212121] dark:!text-white;
+  }
+}
+
+
+
+

@@ -1,0 +1,38 @@
+@layer components {
+  .sidebar-button {
+    @apply block rounded px-[15px] py-[13px] w-full cursor-pointer text-left  text-[15px] text-[#444050] dark:text-white dark:hover:bg-gray-900! dark:hover:text-white! transition duration-200 ease-in-out hover:text-[#444050];
+  }
+  .sidebar-button.active {
+    @apply bg-[#F3F3F4] text-[#444050] dark:bg-[#111826] dark:text-white;
+  }
+  .sidebar-button {
+    @apply block rounded px-[15px] py-[13px] w-full cursor-pointer text-left hover:bg-[#F3F3F4] text-[15px] text-[#444050] dark:text-white transition duration-200 ease-in-out hover:text-[#444050];
+  }
+  .btn-gradient-active {
+    @apply text-white bg-[linear-gradient(to_right,_#1C98D8,_#1C98D8b3)] text-white;
+  }
+  .btn-gradient-active img {
+    filter: brightness(0) invert(1);
+  }
+
+  /* Button customization  */
+  .btn-bordered {
+    @apply border border-[#D1D0D4] text-[#444050] transition duration-200 ease-in-out;
+  }
+  .btn-primary {
+    @apply bg-[#1C98D8]  text-white;
+  }
+
+  .btn-success {
+    @apply bg-[#28C76F] text-white;
+  }
+  .btn-gray {
+    @apply bg-[#EBEBED]  text-[#808390];
+  }
+  html[data-theme="dark"] .btn-gray {
+    @apply bg-gray-900 text-[#cacaca]
+  }
+  button {
+    cursor: pointer;
+  }
+}

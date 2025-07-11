@@ -1,0 +1,31 @@
+@layer components {
+  html[data-theme="dark"] .left-side-bar img {
+    filter: brightness(0) invert(1);
+  }
+  .left-side-bar li {
+    @apply dark:!text-white;
+  }
+  .collapsed .logo h1 {
+    @apply !hidden;
+  }
+  .collapsed .logo {
+    @apply !justify-center p-2;
+  }
+
+  .hideable {
+    @apply !whitespace-nowrap;
+  }
+
+  .collapsed .hideable {
+    @apply !invisible;
+  }
+  .sidebar-fixed {
+    @apply !fixed top-0 left-0 h-full  z-50 shadow-lg;
+  }
+  .sidebar-sticky {
+    @apply h-screen sticky top-0 !w-[280px];
+  }
+  .collapsed .Lvl-2 {
+    @apply !hidden;
+  }
+}

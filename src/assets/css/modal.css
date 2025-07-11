@@ -1,0 +1,13 @@
+html[data-theme="dark"] .p-dialog-default{
+    background: #1e2939 !important;
+}
+@layer components {
+    /* .modal-footer{
+        @apply absolute  right-4 bottom-2 
+    } */
+    /* .modal */
+    .form-content {
+        @apply flex flex-col justify-between h-full;
+    }
+
+}

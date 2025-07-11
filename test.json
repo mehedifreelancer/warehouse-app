@@ -1,0 +1,72 @@
+{
+    "isFirmwareUpdateAvailable": true,
+    "id": 10,
+    "macId": "C4:4F:33:1E:76:95",
+    "createdAt": "2024-03-21 12:59:25",
+    "accessKey": "da7d4c5e-092c-4951-8e3d-f8916b563bc0",
+    "status": 1,
+    "state": 1,
+    "mode": 1,
+    "triggerVoltage": 2,
+    "stitchAllowance": 0.8,
+    "deviceId": 1,
+    "minIdleTime": 0,
+    "lastStartUpCall": [
+        2024,
+        5,
+        9,
+        11,
+        28,
+        50
+    ],
+    "lastStateUpdate": [
+        2024,
+        5,
+        9,
+        11,
+        28,
+        50
+    ],
+    "lastSyncAt": [
+        2025,
+        3,
+        3,
+        9,
+        44,
+        16
+    ],
+    "lastInfoUpdate": [
+        2025,
+        1,
+        27,
+        14,
+        53,
+        43
+    ],
+    "version": "00.00.000",
+    "isLogging": false,
+    "selectedFirmwareFile": {
+        "id": 17482800,
+        "active": true,
+        "createdAt": [
+            2025,
+            7,
+            1,
+            17,
+            27,
+            26
+        ],
+        "updatedAt": [
+            2025,
+            7,
+            1,
+            17,
+            27,
+            26
+        ],
+        "filePath": "4c6ae423-0177-4578-b93c-6246c03f9b81/main.ino.bin",
+        "name": "3.3.4",
+        "type": "bin",
+        "items": []
+    }
+}
