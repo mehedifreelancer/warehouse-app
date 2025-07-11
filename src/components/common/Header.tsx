@@ -20,8 +20,6 @@ const Header = () => {
       <div className="flex justify-between items-center">
         {/* Header left */}
         <div className="flex gap-2 items-center">
-          {/* <img src={headerIcon} alt="Header Icon" />
-          <h2 className="font-bold text-[18px]">Text Server</h2> */}
            {<BreadCrumb  />}
         </div>
         {/* Header Right */}
