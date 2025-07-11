@@ -5,6 +5,7 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "noEmitOnError": false  // <- Allow build even if there are type errors
+    "noEmitOnError": false,
+    "skipLibCheck": true
   }
 }
