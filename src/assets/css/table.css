@@ -13,7 +13,7 @@
   }
 
   .data-table-column-header {
-    @apply px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-[#cACACA]  border-b dark:border-gray-900 border-gray-200;
+    @apply px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-[#cACACA]  border-b dark:border-gray-900 border-gray-200 ;
   }
 
   .data-table-column-body {
@@ -28,9 +28,7 @@
   .table-search input{
     @apply border-[#D1D0D4] border-1 relative  py-2 w-[220px] rounded-md px-8 outline-0 dark:border-[#ffffff]  dark:text-[#cACACA];
   }
-  .p-column-header-content{
-    @apply gap-0;
-  }
+
   .p-checkbox-box{
     display: none;
 

@@ -141,9 +141,9 @@ body {
 .p-inputwrapper-filled {
   @apply shadow bg-white dark:bg-gray-800 p-[8px] border border-gray-300  rounded;
 }
-.p-paginator {
+/* .p-paginator {
   @apply bg-gray-800 rounded-lg p-2 flex items-center justify-end gap-2 mt-5;
-}
+} */
 .p-treeselect-trigger svg,
 .filter-area svg {
   @apply text-gray-500 dark:text-gray-300;

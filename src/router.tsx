@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "./layouts/RootLayout";
 import NotFound from "./pages/NotFound";
 import App from "./App";
+import Product from "./pages/products/Product";
 
 
 // You can import other placeholder components as needed
@@ -39,8 +40,7 @@ export const router = createBrowserRouter([
           { path: "product-category", element: (<>product-category page</>) },
           { path: "product-colors", element: (<>product-colors  page</>) },
           { path: "product-items", element: (<>product-items  page</>) },
-          { path: "product-list", element: (<>product-list  page</>) },
-          { path: "product-list", element: (<>product-list  page</>) },
+          { path: "product-list", element: (<Product/>) },
         ],
       },
       {
