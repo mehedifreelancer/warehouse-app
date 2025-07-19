@@ -72,10 +72,10 @@ body {
 
 @layer components {
   .p-dropdown {
-    @apply p-2 border border-gray-300 dark:border-white rounded;
+    @apply p-2 border-b border-gray-700 dark:border-white rounded;
   }
   .p-dropdown-items-wrapper {
-    @apply mt-2  shadow! bg-white dark:bg-[#1e2939] border  border-gray-300 dark:border-gray-900 rounded;
+    @apply mt-2  shadow! bg-white dark:bg-[#1e2939] border   rounded;
   }
 
   .p-dropdown-label {
@@ -139,7 +139,7 @@ body {
 
 
 .p-inputwrapper-filled {
-  @apply shadow bg-white dark:bg-gray-800 p-[8px] border border-gray-300  rounded;
+  @apply shadow bg-white dark:bg-gray-800 p-[8px]   rounded;
 }
 /* .p-paginator {
   @apply bg-gray-800 rounded-lg p-2 flex items-center justify-end gap-2 mt-5;

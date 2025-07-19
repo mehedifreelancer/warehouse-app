@@ -3,6 +3,9 @@ import RootLayout from "./layouts/RootLayout";
 import NotFound from "./pages/NotFound";
 import App from "./App";
 import Product from "./pages/products/Product";
+import Color from "./pages/products/Color";
+import ProductItem from "./pages/products/ProductItem";
+import Warehouse from "./pages/warehouse/Warehouse";
 
 
 // You can import other placeholder components as needed
@@ -38,8 +41,8 @@ export const router = createBrowserRouter([
         path: "products",
         children: [
           { path: "product-category", element: (<>product-category page</>) },
-          { path: "product-colors", element: (<>product-colors  page</>) },
-          { path: "product-items", element: (<>product-items  page</>) },
+          { path: "product-colors", element: (<Color/>) },
+          { path: "product-items", element: (<ProductItem/>) },
           { path: "product-list", element: (<Product/>) },
         ],
       },
@@ -66,7 +69,7 @@ export const router = createBrowserRouter([
         path: "Warehouse",
         children: [
           { path: "stocks", element: (<>Stocks  page</>) },
-          { path: "warehouse-list", element: (<>Warehouse list  page</>) },
+          { path: "warehouse-list", element: (<Warehouse/>) },
         ],
       },
 

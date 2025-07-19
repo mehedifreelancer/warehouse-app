@@ -20,3 +20,21 @@ export interface Product {
 }
 
 export type ProductResponse = Product[];
+
+
+export interface UpdateProductPayload {
+  name?: string;
+  short_description?: string | null;
+  description?: string;
+  additional_information?: string;
+  price?: number;
+  discounted_price?: number | null;
+  is_featured?: boolean;
+  is_top_sale?: boolean;
+  is_top_rated?: boolean;
+  status?: string; // Adjust to match backend enums
+  feature_image?: string;
+  size_guide?: string | null;
+  spu?: string;
+  category?: number;
+}
