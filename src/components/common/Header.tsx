@@ -22,12 +22,9 @@ const Header = () => {
         <div className="flex gap-2 items-center">
            {<BreadCrumb  />}
         </div>
-        {/* Header Right */}
         <div className="flex gap-[20px] items-center relative">
-          {/* Items Dropdown */}
 
-          {/* Notification Dropdown */}
-          <Dropdown
+          {/* <Dropdown
             trigger={
               <button
                 type="button"
@@ -45,12 +42,9 @@ const Header = () => {
               </button>
             }
           >
-            {/* =============== Notification Main Container ======= */}
-            {/* ========== main container ====== */}
             <div className="w-[401px] bg-white mt-1 rounded-md border border-[#DDDDDD] px-[15px] dark:bg-[#1e2939] dark:border-gray-900 shadow-lg max-h-[500px] overflow-auto scrollbar-none">
               {Array.from({ length: 10 }).map((_, index) => (
                 <div key={index} className="py-[10px]">
-                  {/* ===== Header ===== */}
                   <div className="flex justify-between mb-[5px] items-center ">
                     <div className="flex gap-x-[10px]">
                       <button className="bg-[#DDF6E8] text-[#28C76F] px-2 py-1 text-[13px] rounded-xs">
@@ -68,12 +62,10 @@ const Header = () => {
                     </p>
                   </div>
 
-                  {/* ===== Description ===== */}
                   <p className="text-[13px] text-[#6D6B77] dark:text-[#cacaca] mb-[10px]">
                     [ Desk : Mobilon Tape Mark For Getharning ]
                   </p>
 
-                  {/* ===== Requirement Info ===== */}
                   <div className="pb-[5px]">
                     <div className="flex justify-between text-[#444050] dark:text-[#cacaca] text-[13px]">
                       <p>
@@ -96,14 +88,13 @@ const Header = () => {
                     </div>
                   </div>
 
-                  {/* ===== Footer Time ===== */}
                   <p className="text-[#ACAAB1] text-[13px] text-end">
                     12hr ago
                   </p>
                 </div>
               ))}
             </div>
-          </Dropdown>
+          </Dropdown> */}
           <Button onClick={toggleMode} shadowOnHover={false}>
             {mode && mode === "dark" ? (
               <Sun className="w-6 h-6" />

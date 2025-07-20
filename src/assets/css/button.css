@@ -26,6 +26,9 @@
   .btn-success {
     @apply bg-[#28C76F] text-white;
   }
+  .btn-danger {
+    @apply bg-red-900 text-white;
+  }
   .btn-gray {
     @apply bg-[#EBEBED]  text-[#808390];
   }
