@@ -6,6 +6,7 @@ import Product from "./pages/products/Product";
 import Color from "./pages/products/Color";
 import ProductItem from "./pages/products/ProductItem";
 import Warehouse from "./pages/warehouse/Warehouse";
+import Stock from "./pages/warehouse/Stock";
 
 
 // You can import other placeholder components as needed
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
       {
         path: "Warehouse",
         children: [
-          { path: "stocks", element: (<>Stocks  page</>) },
+          { path: "stocks", element: (<Stock/>) },
           { path: "warehouse-list", element: (<Warehouse/>) },
         ],
       },
