@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 // Request interceptor for adding auth token
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzUzMjM5Mzg3LCJpYXQiOjE3NTMwMjMzODd9.VoI6SbkeMBHOiitEoC_qMyEOBKKwvejjTr3shev_48k"
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzUzNzg5MTUwLCJpYXQiOjE3NTM1NzMxNTB9.t0fH1RehE8X_cA23yi_6m5nE_eDisgAfee-0yGEDdkg"
 api.interceptors.request.use(
   (config) => {
     // const token = localStorage.getItem('authToken');

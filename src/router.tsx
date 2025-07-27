@@ -7,6 +7,7 @@ import Color from "./pages/products/Color";
 import ProductItem from "./pages/products/ProductItem";
 import Warehouse from "./pages/warehouse/Warehouse";
 import Stock from "./pages/warehouse/Stock";
+import Users from "./pages/authorization/Users";
 
 
 // You can import other placeholder components as needed
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
         path: "auth",
         children: [
           { path: "groups", element: (<>Groups Auth page</>) },
-          { path: "users", element: (<>Users Auth page</>) },
+          { path: "users", element: (<Users/>) },
         ],
       },
       {

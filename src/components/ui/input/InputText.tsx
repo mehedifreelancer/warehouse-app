@@ -8,8 +8,10 @@ interface InputTextProps {
   placeholder: string;
   type?: string;
   readOnly?: boolean;
-  value?:number
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
 const InputText = ({
   placeholder,
   defaultValue,
@@ -18,7 +20,8 @@ const InputText = ({
   name,
   type,
   readOnly = false,
-  value
+  value,
+  onChange
 }: InputTextProps) => {
   return (
     <div>
@@ -38,6 +41,7 @@ const InputText = ({
           className="w-full border-0 focus:ring-0 focus:outline-none placeholder:text-[#444050] dark:placeholder:text-[#cacaca] placeholder:text-[13px] dark:text-[#cacaca] placeholder:bg-transparent dark:placeholder:bg-transparent autofill:bg-transparent dark:autofill:bg-transparent"
           defaultValue={defaultValue}
           value={value}
+          onChange={onChange}
         />
       </div>
       {checkErrorField && (
