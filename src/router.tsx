@@ -8,6 +8,9 @@ import ProductItem from "./pages/products/ProductItem";
 import Warehouse from "./pages/warehouse/Warehouse";
 import Stock from "./pages/warehouse/Stock";
 import Users from "./pages/authorization/Users";
+import ContactRequests from "./pages/site-settings/ContactRequests";
+import BrandItems from "./pages/site-settings/BrandItems";
+import MainSite from "./pages/site-settings/MainSite";
 
 
 // You can import other placeholder components as needed
@@ -52,9 +55,9 @@ export const router = createBrowserRouter([
         path: "site-settings",
         children: [
           { path: "about-us", element: (<>About us  page</>) },
-          { path: "contact-requests", element: (<>Contact request  page</>) },
-          { path: "brand-items", element: (<>Brand-items  page</>) },
-          { path: "main-sites", element: (<>Main-sites  page</>) },
+          { path: "contact-requests", element: (<ContactRequests/>) },
+          { path: "brand-items", element: (<BrandItems/>) },
+          { path: "main-sites", element: (<MainSite/>) },
           { path: "sliders", element: (<>Sliders  page</>) },
           { path: "social-media-icons", element: (<>Social Media settings  page</>) },
 
