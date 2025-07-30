@@ -13,44 +13,57 @@ import {
   rowsToShow,
 } from "../../config/data-table/dataTableConfig";
 import { Delete, Plus, Save, Search, X } from "lucide-react";
+import type { Slider } from "../../types/site-settings/sliders.types";
 import {
-  createBrandItem,
-  deleteBrandItem,
-  getBrandItems,
-  updateBrandItem,
-} from "../../services/authorization/brand-items.service";
-import type { BrandItem } from "../../types/site-settings/brand-items.types";
+  createSlider,
+  deleteSlider,
+  getSliders,
+  updateSlider,
+} from "../../services/site-settings/sliders.service";
 import {
-  createBrandItemSchema,
-  updateBrandItemSchema,
-} from "../../schemas/site-settings/brand-items.schema";
+  sliderFormSchema,
+  sliderUpdateFormSchema,
+} from "../../schemas/site-settings/sliders.schema";
+import { getProductCategories } from "../../services/products/productCategory.service";
+import type { ProductCategory } from "../../types/products/productCategory.types";
+import SearchableSelect from "../../components/ui/select/SearchableSelect";
 
-const BrandItems = () => {
-  const [items, setItems] = useState<BrandItem[] | null>(null);
+const Sliders = () => {
+  const [slidersList, setSlidersList] = useState<Slider[] | null>(null);
+  const [categoryList, setCategoryList] = useState<ProductCategory[] | null>(
+    null
+  );
+
   const [error, setError] = useState<string | null>(null);
-  const [titleFilter, setTitleFilter] = useState("");
-  const [modalFor, setModalFor] = useState("");
-  const [rowData, setRowData] = useState<BrandItem | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [reloadData, setReload] = useState(false);
+  const [subTitleFilter, setSubTitleFilter] = useState<string>("");
+  const [modalFor, setModalFor] = useState<string>("");
+  const [rowData, setRowData] = useState<Slider | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [reloadData, setReload] = useState<boolean>(false);
   const { setModalVisibility } = useContext<any>(GlobalContext);
   const [formValidationErrors, setFormValidationErrors] = useState<
     Record<string, string[]>
   >({});
+  const [selectedCategoryId, setSelectedCategoryId] =
+    useState<ProductCategory | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const filterByTitle = {
-    title: { value: titleFilter, matchMode: "contains" as const },
+  const filterBySubTitle = {
+    sub_title: { value: subTitleFilter, matchMode: "contains" as const },
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await getBrandItems();
-        setItems(res);
+        const res = await getSliders();
+        const catList = await getProductCategories();
+        setSlidersList(res);
+        setCategoryList(catList);
+        console.log(catList);
       } catch (error) {
-        setError("Failed to fetch brand items");
+        console.error("Failed to fetch sliders:", error);
+        setError("Failed to fetch sliders.");
       } finally {
         setLoading(false);
       }
@@ -58,77 +71,89 @@ const BrandItems = () => {
     fetchData();
   }, [reloadData]);
 
-  const handleCreateItem = async (formData: FormData) => {
+  const handleCreateSlider = async (formData: FormData) => {
     const formFields = {
-      title: formData.get("title") as string,
-      subtitle: formData.get("subtitle") as string,
-      campaign_text: formData.get("campaign_text") as string,
-      category: Number(formData.get("category")),
-      image: imageFile, // Required for create
+      image: imageFile,
+      sub_title: formData.get("sub_title") as string,
+      intro_one: formData.get("intro_one") as string,
+      intro_two: formData.get("intro_two") as string,
+      offer_text: formData.get("offer_text") as string,
+      category: Number(selectedCategoryId),
     };
 
-    const validation = createBrandItemSchema.safeParse(formFields);
+    const validation = sliderFormSchema.safeParse(formFields);
     if (!validation.success) {
       setFormValidationErrors(validation.error.flatten().fieldErrors);
+      console.error("Validation failed:", validation.error.flatten().fieldErrors);
       return;
     }
 
     try {
-      await createBrandItem(validation.data);
-      setModalVisibility(false);
-      setReload(!reloadData);
-      setImageFile(null);
+      const confirmation = await createSlider(validation.data);
+      if (confirmation.status === 200 || confirmation.status === 201) {
+        setModalVisibility(false);
+        setReload(!reloadData);
+        setFormValidationErrors({});
+        setImageFile(null);
+      }
     } catch (error) {
-      console.error("Creation failed:", error);
+      console.error("Error creating slider:", error);
     }
   };
 
-const handleUpdateItem = async (formData: FormData) => {
-  const formFields = {
-    title: formData.get("title") as string,
-    subtitle: formData.get("subtitle") as string,
-    campaign_text: formData.get("campaign_text") as string,
-    category: Number(formData.get("category")),
-    image: imageFile // This will be undefined if no new image selected
-  };
+  const handleUpdateSlider = async (formData: FormData) => {
+    const formFields = {
+      sub_title: formData.get("sub_title") as string,
+      intro_one: formData.get("intro_one") as string,
+      intro_two: formData.get("intro_two") as string,
+      offer_text: formData.get("offer_text") as string,
+      category: Number(selectedCategoryId),
+      image: imageFile,
+    };
 
-  const validation = updateBrandItemSchema.safeParse(formFields);
-  if (!validation.success) {
-    setFormValidationErrors(validation.error.flatten().fieldErrors);
-    return;
-  }
+    const validation = sliderUpdateFormSchema.safeParse(formFields);
+    if (!validation.success) {
+      setFormValidationErrors(validation.error.flatten().fieldErrors);
+            console.error("Validation failed:", validation.error.flatten().fieldErrors);
 
-  try {
-    const apiPayload = new FormData();
-    apiPayload.append("title", formFields.title);
-    apiPayload.append("subtitle", formFields.subtitle);
-    apiPayload.append("campaign_text", formFields.campaign_text);
-    apiPayload.append("category", formFields.category.toString());
-    
-    // Only append image if a new one was selected
-    if (imageFile) {
-      apiPayload.append("image", imageFile);
-    } else {
-      // Explicitly tell backend to keep existing image
-      apiPayload.append("keep_existing_image", "true");
+      return;
     }
 
-    await updateBrandItem(rowData?.id!, apiPayload);
-    setModalVisibility(false);
-    setReload(!reloadData);
-    setImageFile(null);
-  } catch (error) {
-    console.error("Update failed:", error);
-  }
-};
-
-  const handleDeleteItem = async () => {
     try {
-      await deleteBrandItem(rowData?.id!);
-      setModalVisibility(false);
-      setReload(!reloadData);
+      const apiPayload = new FormData();
+      apiPayload.append("sub_title", formFields.sub_title);
+      apiPayload.append("intro_one", formFields.intro_one);
+      apiPayload.append("intro_two", formFields.intro_two);
+      apiPayload.append("offer_text", formFields.offer_text);
+      apiPayload.append("category", formFields.category.toString());
+
+      if (imageFile) {
+        apiPayload.append("image", imageFile);
+      } else {
+        apiPayload.append("keep_existing_image", "true");
+      }
+
+      const confirmation = await updateSlider(rowData?.id!, apiPayload);
+      if (confirmation.status === 200) {
+        setModalVisibility(false);
+        setReload(!reloadData);
+        setFormValidationErrors({});
+        setImageFile(null);
+      }
     } catch (error) {
-      console.error("Deletion failed:", error);
+      console.error("Error updating slider:", error);
+    }
+  };
+
+  const handleDeleteSlider = async () => {
+    try {
+      const confirmation = await deleteSlider(rowData?.id!);
+      if (confirmation.status === 200 || confirmation.status === 204) {
+        setModalVisibility(false);
+        setReload(!reloadData);
+      }
+    } catch (error) {
+      console.error("Error deleting slider:", error);
     }
   };
 
@@ -140,11 +165,13 @@ const handleUpdateItem = async (formData: FormData) => {
     }
   };
 
+  console.log(rowData);
+  
   if (error) return <p className="p-6">{error}</p>;
 
   const tableHeader = (
     <div className="data-table-header">
-      <div className="data-table-heading">Brand Items</div>
+      <div className="data-table-heading">Sliders List</div>
       <div className="flex gap-2">
         <Button
           className="btn-bordered"
@@ -154,19 +181,20 @@ const handleUpdateItem = async (formData: FormData) => {
           }}
         >
           <Plus size={16} className="mr-1" />
-          Add Brand Item
+          Add Slider
         </Button>
+
         <div className="relative table-search">
           <Search
             size={18}
             className="absolute top-2.5 ml-2 text-[#444050] dark:text-[#cAcAcA]"
           />
           <input
-            onChange={(e) => setTitleFilter(e.target.value)}
-            value={titleFilter}
+            onChange={(e) => setSubTitleFilter(e.target.value)}
+            value={subTitleFilter}
             className=""
             type="search"
-            placeholder="Search by title..."
+            placeholder="Search by sub title..."
           />
         </div>
       </div>
@@ -179,33 +207,40 @@ const handleUpdateItem = async (formData: FormData) => {
         <TableSkeleton />
       ) : (
         <DataTable
-          value={items ?? []}
+          value={slidersList ?? []}
           paginator
           pageLinkSize={pageToShow}
           rows={rowsToShow}
-          filters={filterByTitle}
+          filters={filterBySubTitle}
           paginatorTemplate={paginatorTemplate}
           header={tableHeader}
           tableClassName="data-table"
           rowClassName={() => "data-table-row"}
         >
           <Column
-            field="title"
-            header="Title"
+            field="sub_title"
+            header="Sub Title"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
           />
           <Column
-            field="subtitle"
-            header="Subtitle"
+            field="intro_one"
+            header="Intro One"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
           />
           <Column
-            field="campaign_text"
-            header="Campaign Text"
+            field="intro_two"
+            header="Intro Two"
+            sortable
+            headerClassName="data-table-column-header"
+            bodyClassName="data-table-column-body"
+          />
+          <Column
+            field="offer_text"
+            header="Offer Text"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
@@ -225,11 +260,11 @@ const handleUpdateItem = async (formData: FormData) => {
               rowData.image ? (
                 <img
                   src={rowData.image}
-                  alt={rowData.title}
-                  className="h-10 w-10 object-cover"
+                  alt="Slider"
+                  className="w-16 h-16 object-cover"
                 />
               ) : (
-                <span className="text-gray-400">No image</span>
+                <span>No Image</span>
               )
             }
           />
@@ -269,38 +304,47 @@ const handleUpdateItem = async (formData: FormData) => {
             setFormValidationErrors({});
             setImageFile(null);
           }}
-          modalTitle="Create Brand Item"
+          modalTitle="Create Slider"
         >
           <form
-            action={handleCreateItem}
+            action={handleCreateSlider}
             className="dark:bg-[#1e2939] form-content"
           >
             <div className="formwork-body space-y-4">
               <InputText
-                placeholder="Enter title"
-                name="title"
-                label="Title"
-                checkErrorField={formValidationErrors.title}
+                placeholder="Sub Title"
+                name="sub_title"
+                label="Sub Title"
+                checkErrorField={formValidationErrors.sub_title}
               />
               <InputText
-                placeholder="Enter subtitle"
-                name="subtitle"
-                label="Subtitle"
-                checkErrorField={formValidationErrors.subtitle}
+                placeholder="Intro One"
+                name="intro_one"
+                label="Intro One"
+                checkErrorField={formValidationErrors.intro_one}
               />
               <InputText
-                placeholder="Enter campaign text"
-                name="campaign_text"
-                label="Campaign Text"
-                checkErrorField={formValidationErrors.campaign_text}
+                placeholder="Intro Two"
+                name="intro_two"
+                label="Intro Two"
+                checkErrorField={formValidationErrors.intro_two}
               />
               <InputText
-                placeholder="Enter category ID"
-                name="category"
-                label="Category ID"
-                type="number"
-                checkErrorField={formValidationErrors.category}
+                placeholder="Offer Text"
+                name="offer_text"
+                label="Offer Text"
+                checkErrorField={formValidationErrors.offer_text}
               />
+              <SearchableSelect
+                name="cat"
+                value={selectedCategoryId}
+                onChange={setSelectedCategoryId}
+                options={categoryList ?? []}
+                label="Select Category"
+                valueKey="id"
+                labelKey="category_name"
+              />
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Image *
@@ -360,38 +404,47 @@ const handleUpdateItem = async (formData: FormData) => {
             setFormValidationErrors({});
             setImageFile(null);
           }}
-          modalTitle="Update Brand Item"
+          modalTitle="Update Slider"
         >
-          <form action={handleUpdateItem}>
+          <form action={handleUpdateSlider}>
             <div className="space-y-4">
+             
               <InputText
-                placeholder="Enter title"
-                name="title"
-                label="Title"
-                defaultValue={rowData?.title}
-                checkErrorField={formValidationErrors.title}
+                placeholder="Sub Title"
+                label="Sub Title"
+                name="sub_title"
+                defaultValue={rowData?.sub_title}
+                checkErrorField={formValidationErrors.sub_title}
               />
               <InputText
-                placeholder="Enter subtitle"
-                name="subtitle"
-                label="Subtitle"
-                defaultValue={rowData?.subtitle}
-                checkErrorField={formValidationErrors.subtitle}
+                placeholder="Intro One"
+                label="Intro One"
+                name="intro_one"
+                defaultValue={rowData?.intro_one}
+                checkErrorField={formValidationErrors.intro_one}
               />
               <InputText
-                placeholder="Enter campaign text"
-                name="campaign_text"
-                label="Campaign Text"
-                defaultValue={rowData?.campaign_text}
-                checkErrorField={formValidationErrors.campaign_text}
+                placeholder="Intro Two"
+                label="Intro Two"
+                name="intro_two"
+                defaultValue={rowData?.intro_two}
+                checkErrorField={formValidationErrors.intro_two}
               />
               <InputText
-                placeholder="Enter category ID"
-                name="category"
-                label="Category ID"
-                type="number"
-                defaultValue={rowData?.category.toString()}
-                checkErrorField={formValidationErrors.category}
+                placeholder="Offer Text"
+                label="Offer Text"
+                name="offer_text"
+                defaultValue={rowData?.offer_text}
+                checkErrorField={formValidationErrors.offer_text}
+              />
+              <SearchableSelect
+                name="cat"
+                value={rowData?.category}
+                onChange={setSelectedCategoryId}
+                options={categoryList ?? []}
+                label="Select Category"
+                valueKey="id"
+                labelKey="category_name"
               />
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -439,8 +492,8 @@ const handleUpdateItem = async (formData: FormData) => {
               <Button
                 onClick={() => {
                   setModalVisibility(false);
-                  setImageFile(null);
                   setFormValidationErrors({});
+                  setImageFile(null);
                 }}
                 className="btn-gray"
               >
@@ -459,15 +512,15 @@ const handleUpdateItem = async (formData: FormData) => {
       {modalFor === "delete" && (
         <Modal
           modalCrossAction={() => setFormValidationErrors({})}
-          modalTitle="Deleting Brand Item"
+          modalTitle="Deleting Slider"
         >
-          <form action={handleDeleteItem}>
+          <form action={handleDeleteSlider}>
             <div className="my-3 flex flex-col gap-4">
               <h2 className="text-[#444050] dark:text-[#cAcAcA] font-bold">
                 Are You Sure!
               </h2>
               <h3 className="text-[#444050] dark:text-[#cAcAcA]">
-                "{rowData?.title}" will be deleted permanently!
+                "{rowData?.sub_title}" will be deleted permanently!
               </h3>
             </div>
             <div className="flex justify-end gap-2 mt-4">
@@ -490,4 +543,4 @@ const handleUpdateItem = async (formData: FormData) => {
   );
 };
 
-export default BrandItems;
+export default Sliders;

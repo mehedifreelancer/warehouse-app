@@ -1,3 +1,4 @@
+import type { AxiosResponse } from "axios";
 import { toastCustom } from "../../components/ui/CustomToast";
 import api from "../../config/api/api-config";
 import type { User, UsersResponse, CreateUserPayload, UpdateUserPayload } from "../../types/users/users.types";
@@ -34,30 +35,34 @@ export const createUser = (payload: CreateUserPayload): Promise<AxiosResponse<Us
     });
 };
 
-export const updateUser = (
+export const updateUser = async (
   id: number,
   payload: UpdateUserPayload
 ): Promise<AxiosResponse<User>> => {
-  return api
-    .patch<User>(`/users/${id}/`, payload)
-    .then((res) => {
-      toastCustom({
-        title: "User Updated",
-        message: `User "${res.data.username}" was successfully updated.`,
-        type: "success",
-      });
-      return res;
-    })
-    .catch((err) => {
-      const errorMessage =
-        err?.response?.data?.message || "Failed to update user.";
-      toastCustom({
-        title: "Update Failed",
-        message: errorMessage,
-        type: "error",
-      });
-      throw err;
+  try {
+    const res = await api.patch<User>(`/users/${id}/`, payload);
+
+    toastCustom({
+      title: "User Updated",
+      message: `User "${res.data.username}" was successfully updated.`,
+      type: "success",
+    }); 
+
+    return res;
+  } catch (err: any) {
+    console.error("Failed to update user:", err.status);
+                       
+    const errorMessage =
+       err?.respose?.data?.username[0] || "Failed to update user.";
+
+    toastCustom({ 
+      title: "Update Failed",
+      message: errorMessage,
+      type: "error",
     });
+
+    throw err; // rethrow for the caller to handle if needed
+  }
 };
 
 export const deleteUser = (id: number): Promise<AxiosResponse<void>> =>

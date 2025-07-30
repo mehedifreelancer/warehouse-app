@@ -13,22 +13,21 @@ import {
   rowsToShow,
 } from "../../config/data-table/dataTableConfig";
 import { Delete, Plus, Save, Search, X } from "lucide-react";
-import type { User } from "../../types/authorization/users.types";
+import type { ProductCategory } from "../../types/products/productCategory.types";
 import {
-  createUser,
-  deleteUser,
-  getUsers,
-  updateUser,
-} from "../../services/authorization/users.service";
-import { userFormSchema, userUpdateFormSchema } from "../../schemas/authorization/users.schema";
-import { log } from "console";
+  createProductCategory,
+  deleteProductCategory,
+  getProductCategories,
+  updateProductCategory,
+} from "../../services/products/productCategory.service";
+import { productCategoryFormSchema, productCategoryUpdateFormSchema } from "../../schemas/products/productCategory.schema";
 
-const Users = () => {
-  const [usersList, setUsersList] = useState<User[] | null>(null);
+const ProductCategory = () => {
+  const [productCategoriesList, setProductCategoriesList] = useState<ProductCategory[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [usernameFilter, setUsernameFilter] = useState<string>("");
+  const [categoryNameFilter, setCategoryNameFilter] = useState<string>("");
   const [modalFor, setModalFor] = useState<string>("");
-  const [rowData, setRowData] = useState<User | null>(null);
+  const [rowData, setRowData] = useState<ProductCategory | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [reloadData, setReload] = useState<boolean>(false);
   const { setModalVisibility } = useContext<any>(GlobalContext);
@@ -36,22 +35,19 @@ const Users = () => {
     Record<string, string[]>
   >({});
 
-  const filterByUsername = {
-    username: { value: usernameFilter, matchMode: "contains" as const },
+  const filterByCategoryName = {
+    category_name: { value: categoryNameFilter, matchMode: "contains" as const },
   };
-
-    const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await getUsers();
-        setUsersList(res);
+        const res = await getProductCategories();
+        setProductCategoriesList(res);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
-        setError("Failed to fetch users.");
+        console.error("Failed to fetch product categories:", error);
+        setError("Failed to fetch product categories.");
       } finally {
         setLoading(false);
       }
@@ -59,53 +55,37 @@ const Users = () => {
     fetchData();
   }, [reloadData]);
 
-  const handleCreateUser = async (formData: FormData) => {
+  const handleCreateProductCategory = async (formData: FormData) => {
     const formFields = {
-      username: formData.get("username") as string,
-      first_name: formData.get("first_name") as string,
-      last_name: formData.get("last_name") as string,
-      is_superuser: formData.get("is_superuser") === "on",
-      password: formData.get("password") as string,
+      category_name: formData.get("category_name") as string,
+      use_as_menu: formData.get("use_as_menu") === "on",
     };
 
-    const validation = userFormSchema.safeParse(formFields);
+    const validation = productCategoryFormSchema.safeParse(formFields);
     if (!validation.success) {
       setFormValidationErrors(validation.error.flatten().fieldErrors);
       return;
     }
 
     try {
-      const confirmation = await createUser(validation.data);
+      const confirmation = await createProductCategory(validation.data);
       if (confirmation.status === 200 || confirmation.status === 201) {
         setModalVisibility(false);
         setReload(!reloadData);
         setFormValidationErrors({});
       }
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Error creating product category:", error);
     }
   };
- const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  
-  if (name === "password") {
-    setPassword(value);
-  } else {
-    setPasswordConfirmation(value);
-  }
-};
 
-  const handleUpdateUser = async (formData: FormData) => {
+  const handleUpdateProductCategory = async (formData: FormData) => {
     const formFields = {
-      username: formData.get("username") as string,
-      first_name: formData.get("first_name") as string,
-      last_name: formData.get("last_name") as string,
-      is_active: formData.get("is_active") === "on",
-      is_superuser: formData.get("is_superuser") === "on",
-      is_staff: formData.get("is_staff") === "on",
+      category_name: formData.get("category_name") as string,
+      use_as_menu: formData.get("use_as_menu") === "on",
     };
 
-    const validation = userUpdateFormSchema.safeParse(formFields);
+    const validation = productCategoryUpdateFormSchema.safeParse(formFields);
     if (!validation.success) {
       setFormValidationErrors(validation.error.flatten().fieldErrors);
       console.log("Validation errors:", validation.error.flatten().fieldErrors);
@@ -113,35 +93,34 @@ const Users = () => {
     }
 
     try {
-      const confirmation = await updateUser(rowData?.id!, validation.data);
+      const confirmation = await updateProductCategory(rowData?.id!, validation.data);
       if (confirmation.status === 200) {
         setModalVisibility(false);
         setReload(!reloadData);
         setFormValidationErrors({});
       }
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating product category:", error);
     }
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeleteProductCategory = async () => {
     try {
-      const confirmation = await deleteUser(rowData?.id!);
+      const confirmation = await deleteProductCategory(rowData?.id!);
       if (confirmation.status === 200 || confirmation.status === 204) {
         setModalVisibility(false);
         setReload(!reloadData);
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error deleting product category:", error);
     }
   };
-
 
   if (error) return <p className="p-6">{error}</p>;
 
   const tableHeader = (
     <div className="data-table-header">
-      <div className="data-table-heading">Users List</div>
+      <div className="data-table-heading">Product Categories List</div>
       <div className="flex gap-2">
         <Button
           className="btn-bordered"
@@ -151,7 +130,7 @@ const Users = () => {
           }}
         >
           <Plus size={16} className="mr-1" />
-          Add User
+          Add Category
         </Button>
 
         <div className="relative table-search">
@@ -160,8 +139,8 @@ const Users = () => {
             className="absolute top-2.5 ml-2 text-[#444050] dark:text-[#cAcAcA]"
           />
           <input
-            onChange={(e) => setUsernameFilter(e.target.value)}
-            value={usernameFilter}
+            onChange={(e) => setCategoryNameFilter(e.target.value)}
+            value={categoryNameFilter}
             className=""
             type="search"
             placeholder="Search..."
@@ -177,53 +156,44 @@ const Users = () => {
         <TableSkeleton />
       ) : (
         <DataTable
-          value={usersList ?? []}
+          value={productCategoriesList ?? []}
           paginator
           pageLinkSize={pageToShow}
           rows={rowsToShow}
-          filters={filterByUsername}
+          filters={filterByCategoryName}
           paginatorTemplate={paginatorTemplate}
           header={tableHeader}
           tableClassName="data-table"
           rowClassName={() => "data-table-row"}
         >
           <Column
-            field="username"
-            header="Username"
+            field="category_name"
+            header="Category Name"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
           />
           <Column
-            field="first_name"
-            header="First Name"
+            field="slug"
+            header="Slug"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
           />
           <Column
-            field="last_name"
-            header="Last Name"
+            field="use_as_menu"
+            header="Use as Menu"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
-          />
-
-          <Column
-            field="is_active"
-            header="Active"
-            sortable
-            headerClassName="data-table-column-header"
-            bodyClassName="data-table-column-body"
-            body={(rowData) => (rowData.is_active ? "Yes" : "No")}
+            body={(rowData) => (rowData.use_as_menu ? "Yes" : "No")}
           />
           <Column
-            field="is_superuser"
-            header="Superuser"
+            field="created_at"
+            header="Created At"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
-            body={(rowData) => (rowData.is_superuser ? "Yes" : "No")}
           />
           <Column
             header="Action"
@@ -260,63 +230,31 @@ const Users = () => {
           modalCrossAction={() => {
             setFormValidationErrors({});
           }}
-          modalTitle="Create User"
+          modalTitle="Create Product Category"
         >
           <form
-            action={handleCreateUser}
+            action={handleCreateProductCategory}
             className="dark:bg-[#1e2939] form-content"
           >
             <div className="formwork-body space-y-4">
               <InputText
-                placeholder="Username"
-                name="username"
-                label="Username"
-                checkErrorField={formValidationErrors.username}
+                placeholder="Category Name"
+                name="category_name"
+                label="Category Name"
+                checkErrorField={formValidationErrors.category_name}
               />
-              <InputText
-                placeholder="First Name"
-                name="first_name"
-                label="First Name"
-                checkErrorField={formValidationErrors.first_name}
-              />
-              <InputText
-                placeholder="Last Name"
-                name="last_name"
-                label="Last Name"
-                checkErrorField={formValidationErrors.last_name}
-              />
-              <InputText
-                placeholder="Password"
-                name="password"
-                label="Password"
-                type="password"
-                onChange={handlePasswordChange}
-                checkErrorField={formValidationErrors.first_name}
-              />
-              <InputText
-                label="Re type Password" 
-                placeholder="Password"
-                name="password-confirmation"
-                type="password"
-                onChange={(e) => handlePasswordChange(e)}
-              />
-              {passwordConfirmation.length > 0 && password !== passwordConfirmation && (
-  <p className="text-red-500 text-sm mt-1">
-    Passwords do not match!
-  </p>
-)}
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  id="is_superuser"
-                  name="is_superuser"
+                  id="use_as_menu"
+                  name="use_as_menu"
                   className="h-4 w-4 rounded border-gray-300 focus:ring-indigo-500"
                 />
                 <label
-                  htmlFor="is_superuser"
+                  htmlFor="use_as_menu"
                   className="text-sm text-[#444050] dark:text-[#cAcAcA]"
                 >
-                  Superuser
+                  Use as Menu
                 </label>
               </div>
             </div>
@@ -345,74 +283,30 @@ const Users = () => {
           modalCrossAction={() => {
             setFormValidationErrors({});
           }}
-          modalTitle="Update User"
+          modalTitle="Update Product Category"
         >
-          <form action={handleUpdateUser}>
+          <form action={handleUpdateProductCategory}>
             <div className="space-y-4">
               <InputText
-                placeholder="Username"
-                label="Username"
-                name="username"
-                defaultValue={rowData?.username}
-                checkErrorField={formValidationErrors.username}
-              />
-              <InputText
-                placeholder="First Name"
-                label="First Name"
-                name="first_name"
-                defaultValue={rowData?.first_name}
-                checkErrorField={formValidationErrors.first_name}
-              />
-              <InputText
-                placeholder="Last Name"
-                label="Last Name"
-                name="last_name"
-                defaultValue={rowData?.last_name}
-                checkErrorField={formValidationErrors.last_name}
+                placeholder="Category Name"
+                label="Category Name"
+                name="category_name"
+                defaultValue={rowData?.category_name}
+                checkErrorField={formValidationErrors.category_name}
               />
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  id="is_active"
-                  name="is_active"
-                  defaultChecked={rowData?.is_active}
+                  id="use_as_menu"
+                  name="use_as_menu"
+                  defaultChecked={rowData?.use_as_menu}
                   className="h-4 w-4 rounded border-gray-300  focus:ring-indigo-500 "
                 />
                 <label
-                  htmlFor="is_active"
+                  htmlFor="use_as_menu"
                   className="text-sm text-[#444050] dark:text-[#cAcAcA]"
                 >
-                  Active
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_superuser"
-                  name="is_superuser"
-                  defaultChecked={rowData?.is_superuser}
-                  className="h-4 w-4 rounded border-gray-300  focus:ring-indigo-500 "
-                />
-                <label
-                  htmlFor="is_superuser"
-                  className="text-sm text-[#444050] dark:text-[#cAcAcA]"
-                >
-                  Superuser
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_staff"
-                  name="is_staff"
-                  defaultChecked={rowData?.is_staff}
-                  className="h-4 w-4 rounded border-gray-300  focus:ring-indigo-500 "
-                />
-                <label
-                  htmlFor="is_staff"
-                  className="text-sm text-[#444050] dark:text-[#cAcAcA]"
-                >
-                  Staff
+                  Use as Menu
                 </label>
               </div>
             </div>
@@ -439,15 +333,15 @@ const Users = () => {
       {modalFor === "delete" && (
         <Modal
           modalCrossAction={() => setFormValidationErrors({})}
-          modalTitle="Deleting User"
+          modalTitle="Deleting Product Category"
         >
-          <form action={handleDeleteUser}>
+          <form action={handleDeleteProductCategory}>
             <div className="my-3 flex flex-col gap-4">
               <h2 className="text-[#444050] dark:text-[#cAcAcA] font-bold">
                 Are You Sure!
               </h2>
               <h3 className="text-[#444050] dark:text-[#cAcAcA]">
-                "{rowData?.username}" will be deleted permanently!
+                Category "{rowData?.category_name}" will be deleted permanently!
               </h3>
             </div>
             <div className="flex justify-end gap-2 mt-4">
@@ -470,4 +364,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default ProductCategory;

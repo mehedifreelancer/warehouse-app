@@ -11,6 +11,9 @@ import Users from "./pages/authorization/Users";
 import ContactRequests from "./pages/site-settings/ContactRequests";
 import BrandItems from "./pages/site-settings/BrandItems";
 import MainSite from "./pages/site-settings/MainSite";
+import DeliveryCharges from "./pages/order/DeliveryCharges";
+import ProductCategory from "./pages/products/productCategory";
+import Sliders from "./pages/site-settings/Sliders";
 
 
 // You can import other placeholder components as needed
@@ -32,7 +35,7 @@ export const router = createBrowserRouter([
       {
         path: "order",
         children: [
-          { path: "deliverey-charges", element: (<>Order Delivery Charge</>) },
+          { path: "deliverey-charges", element: (<DeliveryCharges/>) },
           { path: "orders", element: (<>Users Auth page</>) },
         ],
       },
@@ -45,7 +48,7 @@ export const router = createBrowserRouter([
       {
         path: "products",
         children: [
-          { path: "product-category", element: (<>product-category page</>) },
+          { path: "product-category", element: (<ProductCategory/>) },
           { path: "product-colors", element: (<Color/>) },
           { path: "product-items", element: (<ProductItem/>) },
           { path: "product-list", element: (<Product/>) },
@@ -58,7 +61,7 @@ export const router = createBrowserRouter([
           { path: "contact-requests", element: (<ContactRequests/>) },
           { path: "brand-items", element: (<BrandItems/>) },
           { path: "main-sites", element: (<MainSite/>) },
-          { path: "sliders", element: (<>Sliders  page</>) },
+          { path: "sliders", element: (<Sliders/>) },
           { path: "social-media-icons", element: (<>Social Media settings  page</>) },
 
         ],
