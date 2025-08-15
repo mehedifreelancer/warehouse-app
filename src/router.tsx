@@ -14,6 +14,7 @@ import MainSite from "./pages/site-settings/MainSite";
 import DeliveryCharges from "./pages/order/DeliveryCharges";
 import ProductCategory from "./pages/products/productCategory";
 import Sliders from "./pages/site-settings/Sliders";
+import AboutUs from "./pages/site-settings/AboutUs";
 
 
 // You can import other placeholder components as needed
@@ -57,7 +58,7 @@ export const router = createBrowserRouter([
       {
         path: "site-settings",
         children: [
-          { path: "about-us", element: (<>About us  page</>) },
+          { path: "about-us", element: (<AboutUs/>) },
           { path: "contact-requests", element: (<ContactRequests/>) },
           { path: "brand-items", element: (<BrandItems/>) },
           { path: "main-sites", element: (<MainSite/>) },

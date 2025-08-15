@@ -151,3 +151,19 @@ body {
 .p-treeselect-filter-container input {
   @apply bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg p-1 w-full m-2 ;
 }
+
+
+  html[data-theme="dark"]  .ql-toolbar .ql-picker-label, .ql-picker-item{
+    color: white;
+  }
+  
+  html[data-theme="dark"]  .ql-snow .ql-stroke{
+    stroke: white !important;
+  }
+
+    html[data-theme="dark"]  .ql-active{
+    background-color:#c6c6c6 !important;
+  }
+   html[data-theme="dark"]  .ql-picker-options{
+    background-color:black !important;
+  }
