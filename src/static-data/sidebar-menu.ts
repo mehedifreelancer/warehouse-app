@@ -52,7 +52,7 @@ export const menuBar: MenuBar = [
         id: "deliverey-charges",
         menuName: "Delivery Charges",
         hasSubMenu: false,
-        path: "/order/deliverey-charges",
+        path: "/order/delivery-charges",
         iconName: "settings.svg",
       },
       {
@@ -171,27 +171,11 @@ export const menuBar: MenuBar = [
     ],
   },
   {
-    id: "user",
-    menuName: "User",
-    hasSubMenu: true,
-    path: "#",
+    id: "customer-management",
+    menuName: "Customer",
+    hasSubMenu: false,
+    path: "/customer",
     iconName: "pre-production.svg",
-    submenu: [
-      {
-        id: "address",
-        menuName: "Address",
-        hasSubMenu: false,
-        path: "/user/address",
-        iconName: "pre-production-gantt-chart.svg",
-      },
-      {
-        id: "customer",
-        menuName: "Customer",
-        hasSubMenu: false,
-        path: "/user/customer",
-        iconName: "pre-production-line-layout.svg",
-      },
-    ],
   },
   {
     id: "warehouse",

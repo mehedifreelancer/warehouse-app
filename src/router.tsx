@@ -2,113 +2,123 @@ import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "./layouts/RootLayout";
 import NotFound from "./pages/NotFound";
 import App from "./App";
+
+// Products
 import Product from "./pages/products/Product";
 import Color from "./pages/products/Color";
 import ProductItem from "./pages/products/ProductItem";
+import ProductCategory from "./pages/products/productCategory";
+
+// Warehouse
 import Warehouse from "./pages/warehouse/Warehouse";
 import Stock from "./pages/warehouse/Stock";
+
+// Authorization
 import Users from "./pages/authorization/Users";
+
+// Site settings
 import ContactRequests from "./pages/site-settings/ContactRequests";
 import BrandItems from "./pages/site-settings/BrandItems";
 import MainSite from "./pages/site-settings/MainSite";
-import DeliveryCharges from "./pages/order/DeliveryCharges";
-import ProductCategory from "./pages/products/productCategory";
 import Sliders from "./pages/site-settings/Sliders";
 import AboutUs from "./pages/site-settings/AboutUs";
 
+// Orders
 
-// You can import other placeholder components as needed
+// Middleware
+import PrivateRoute from "./middleware/PrivateRoute";
+import PublicRoute from "./middleware/PublicRoute";
+
+// Auth pages (example: signin/signup)
+import SignIn from "./pages/auth/SignIn";
+import SocialMediaSettings from "./pages/site-settings/SocialMediaSettings";
+import DeliveryCharges from "./pages/order/DeliveryCharges";
+import Orders from "./pages/order/Orders";
+import Customer from "./services/customer/Customer";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    element: (
+      <PrivateRoute>
+        <RootLayout />
+      </PrivateRoute>
+    ),
     children: [
       { index: true, element: <App /> },
 
       {
         path: "auth",
         children: [
-          { path: "groups", element: (<>Groups Auth page</>) },
-          { path: "users", element: (<Users/>) },
+          { path: "groups", element: <>Groups Auth page</> },
+          { path: "users", element: <Users /> },
         ],
       },
+
       {
         path: "order",
         children: [
-          { path: "deliverey-charges", element: (<DeliveryCharges/>) },
-          { path: "orders", element: (<>Users Auth page</>) },
+          { path: "delivery-charges", element: <DeliveryCharges /> },
+          { path: "orders", element: <Orders/> },
         ],
       },
+
       {
         path: "procurement",
         children: [
-          { path: "procurement-items", element: (<>Order Procurement</>) },
+          { path: "procurement-items", element: <>Order Procurement</> },
         ],
       },
+
       {
         path: "products",
         children: [
-          { path: "product-category", element: (<ProductCategory/>) },
-          { path: "product-colors", element: (<Color/>) },
-          { path: "product-items", element: (<ProductItem/>) },
-          { path: "product-list", element: (<Product/>) },
+          { path: "product-category", element: <ProductCategory /> },
+          { path: "product-colors", element: <Color /> },
+          { path: "product-items", element: <ProductItem /> },
+          { path: "product-list", element: <Product /> },
         ],
       },
+
       {
         path: "site-settings",
         children: [
-          { path: "about-us", element: (<AboutUs/>) },
-          { path: "contact-requests", element: (<ContactRequests/>) },
-          { path: "brand-items", element: (<BrandItems/>) },
-          { path: "main-sites", element: (<MainSite/>) },
-          { path: "sliders", element: (<Sliders/>) },
-          { path: "social-media-icons", element: (<>Social Media settings  page</>) },
-
+          { path: "about-us", element: <AboutUs /> },
+          { path: "contact-requests", element: <ContactRequests /> },
+          { path: "brand-items", element: <BrandItems /> },
+          { path: "main-sites", element: <MainSite /> },
+          { path: "sliders", element: <Sliders /> },
+          { path: "social-media-icons", element: <SocialMediaSettings/>},
         ],
       },
+
       {
-        path: "user",
+        path: "/customer",
         children: [
-          { path: "address", element: (<>Address  page</>) },
-          { path: "customer", element: (<>Customer  page</>) },
+          {index: true, element: <Customer /> },
         ],
       },
+
       {
-        path: "Warehouse",
+        path: "warehouse",
         children: [
-          { path: "stocks", element: (<Stock/>) },
-          { path: "warehouse-list", element: (<Warehouse/>) },
+          { path: "stocks", element: <Stock /> },
+          { path: "warehouse-list", element: <Warehouse /> },
         ],
       },
-
-
-
-
-
-      // {
-      //   path: "qms",
-      //   children: [
-      //     {
-      //       path: "dashboard",
-      //       children: [
-      //         { path: "quality-dashboard", element: (<></>) },
-      //         { path: "silhouette-dashboard", element: (<></>) },
-      //         { path: "production-dashboard", element: (<></>) },
-      //         { path: "floor-dashboard", element: (<></>) },
-      //       ],
-      //     },
-      //     {path: "qc-pass",element: (<></>)},
-      //     {path: "pareto-analysis",element: (<></>)},
-      //     {path: "order-status",element: (<></>)},
-      //     {path: "defect-analysis",element: (<></>)},
-      //     {path: "line-info",element: (<></>)},
-      //     {path: "line-configuration",element: (<></>)},
-      //     {path: "sweing-input-report",element: (<></>)},
-      //     {path: "manual-sewing-input",element: (<></>)}
-      //   ],
-      // },
     ],
   },
+
+  // Public routes
+  {
+    path: "/auth/signin",
+    element: (
+      <PublicRoute>
+        <SignIn />
+      </PublicRoute>
+    ),
+  },
+
+  // Catch all
   { path: "*", element: <NotFound /> },
 ]);

@@ -80,7 +80,7 @@ const Product = () => {
       setLoading(true);
       try {
         const res = await getProducts();
-        setProductList(res);
+        setProductList(res?.results);
       } catch (error) {
         console.error("Failed to fetch work processes:", error);
         setError("Failed to fetch work processes.");

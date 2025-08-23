@@ -50,7 +50,7 @@
     gap: 15px;
   }
   html[data-theme="dark"] .p-paginator-element {
-    background-color: #111826 !important;
+    /* background-color: #111826 !important; */
     color: #cAcAcA !important;
   
   }

@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarPinned, togglePin }) => {
       border-[#EFEEF1] dark:border-gray-700  mb-[10px] flex items-center justify-between bg-white dark:!bg-[#1e2939]"
       >
         <NavLink to="/" className="flex items-center py-3 ">
-          <h1 className="text-[22px] ml-4 dark:text-[#cacaca] font-semibold">Bills</h1>
+          <h1 className="text-[22px] ml-4 dark:text-[#cacaca] font-semibold">Blis</h1>
         </NavLink>
         <button
           onClick={togglePin}

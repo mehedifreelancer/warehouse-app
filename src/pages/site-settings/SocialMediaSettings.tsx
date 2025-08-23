@@ -3,7 +3,8 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import Modal from "../../components/common/Modal";
 import { GlobalContext } from "../../layouts/RootLayout";
-import editIcon from ".../../../../assets/icons/Table/edit.svg";
+import editIcon from "../../assets/icons/Table/edit.svg";
+
 import Button from "../../components/ui/Button";
 import TableSkeleton from "../../components/shared/skeletons/TableSkeleton";
 import InputText from "../../components/ui/input/InputText";
@@ -12,27 +13,17 @@ import {
   paginatorTemplate,
   rowsToShow,
 } from "../../config/data-table/dataTableConfig";
-import { Delete, Plus, Save, Search, X } from "lucide-react";
-import type { DeliveryCharge } from "../../types/order/deliveryCharges.types";
-import {
-  createDeliveryCharge,
-  deleteDeliveryCharge,
-  getDeliveryCharges,
-  updateDeliveryCharge,
-} from "../../services/order/deliveryCharges.service";
-import {
-  deliveryChargeFormSchema,
-  deliveryChargeUpdateFormSchema,
-} from "../../schemas/order/deliveryCharges.schema";
+import { Plus, Save, Search, X } from "lucide-react";
+import type { SocialMediaIcon } from "../../types/site-settings/sociaMediaSettings.types";
+import { createSocialMediaIcon, getSocialMediaIcons, updateSocialMediaIcon } from "../../services/site-settings/sociaMediaSettings.service";
+import { socialMediaIconFormSchema, socialMediaIconUpdateFormSchema } from "../../schemas/site-settings/sociaMediaSettings.schema";
 
-const DeliveryCharges = () => {
-  const [deliveryChargesList, setDeliveryChargesList] = useState<
-    DeliveryCharge[] | null
-  >(null);
+const SocialMediaSettings = () => {
+  const [socialMediaIconsList, setSocialMediaIconsList] = useState<SocialMediaIcon[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [locationFilter, setLocationFilter] = useState<string>("");
+  const [nameFilter, setNameFilter] = useState<string>("");
   const [modalFor, setModalFor] = useState<string>("");
-  const [rowData, setRowData] = useState<DeliveryCharge | null>(null);
+  const [rowData, setRowData] = useState<SocialMediaIcon | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [reloadData, setReload] = useState<boolean>(false);
   const { setModalVisibility } = useContext<any>(GlobalContext);
@@ -40,19 +31,19 @@ const DeliveryCharges = () => {
     Record<string, string[]>
   >({});
 
-  const filterByLocation = {
-    location: { value: locationFilter, matchMode: "contains" as const },
+  const filterByName = {
+    name: { value: nameFilter, matchMode: "contains" as const },
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await getDeliveryCharges();
-        setDeliveryChargesList(res);
+        const res = await getSocialMediaIcons();
+        setSocialMediaIconsList(res);
       } catch (error) {
-        console.error("Failed to fetch delivery charges:", error);
-        setError("Failed to fetch delivery charges.");
+        console.error("Failed to fetch social media icons:", error);
+        setError("Failed to fetch social media icons.");
       } finally {
         setLoading(false);
       }
@@ -60,37 +51,37 @@ const DeliveryCharges = () => {
     fetchData();
   }, [reloadData]);
 
-  const handleCreateDeliveryCharge = async (formData: FormData) => {
+  const handleCreateSocialMediaIcon = async (formData: FormData) => {
     const formFields = {
-      location: formData.get("location") as string,
-      price: formData.get("price") as string,
+      name: formData.get("name") as string,
+      url: formData.get("url") as string,
     };
 
-    const validation = deliveryChargeFormSchema.safeParse(formFields);
+    const validation = socialMediaIconFormSchema.safeParse(formFields);
     if (!validation.success) {
       setFormValidationErrors(validation.error.flatten().fieldErrors);
       return;
     }
 
     try {
-      const confirmation = await createDeliveryCharge(validation.data);
-      if (confirmation.status === 200 || confirmation.status === 201) {
+      const confirmation = await createSocialMediaIcon(validation.data);
+      if (confirmation) {
         setModalVisibility(false);
         setReload(!reloadData);
         setFormValidationErrors({});
       }
     } catch (error) {
-      console.error("Error creating delivery charge:", error);
+      console.error("Error creating social media icon:", error);
     }
   };
 
-  const handleUpdateDeliveryCharge = async (formData: FormData) => {
+  const handleUpdateSocialMediaIcon = async (formData: FormData) => {
     const formFields = {
-      location: formData.get("location") as string,
-      price: formData.get("price") as string,
+      name: formData.get("name") as string,
+      url: formData.get("url") as string,
     };
 
-    const validation = deliveryChargeUpdateFormSchema.safeParse(formFields);
+    const validation = socialMediaIconUpdateFormSchema.safeParse(formFields);
     if (!validation.success) {
       setFormValidationErrors(validation.error.flatten().fieldErrors);
       console.log("Validation errors:", validation.error.flatten().fieldErrors);
@@ -98,29 +89,14 @@ const DeliveryCharges = () => {
     }
 
     try {
-      const confirmation = await updateDeliveryCharge(
-        rowData?.id!,
-        validation.data
-      );
-      if (confirmation.status === 200) {
+      const confirmation = await updateSocialMediaIcon(rowData?.id!, validation.data);
+      if (confirmation) {
         setModalVisibility(false);
         setReload(!reloadData);
         setFormValidationErrors({});
       }
     } catch (error) {
-      console.error("Error updating delivery charge:", error);
-    }
-  };
-
-  const handleDeleteDeliveryCharge = async () => {
-    try {
-      const confirmation = await deleteDeliveryCharge(rowData?.id!);
-      if (confirmation.status === 200 || confirmation.status === 204) {
-        setModalVisibility(false);
-        setReload(!reloadData);
-      }
-    } catch (error) {
-      console.error("Error deleting delivery charge:", error);
+      console.error("Error updating social media icon:", error);
     }
   };
 
@@ -128,7 +104,7 @@ const DeliveryCharges = () => {
 
   const tableHeader = (
     <div className="data-table-header">
-      <div className="data-table-heading">Delivery Charges List</div>
+      <div className="data-table-heading">Social Media Icons List</div>
       <div className="flex gap-2">
         <Button
           className="btn-bordered"
@@ -138,7 +114,7 @@ const DeliveryCharges = () => {
           }}
         >
           <Plus size={16} className="mr-1" />
-          Add Delivery Charge
+          Add Social Media
         </Button>
 
         <div className="relative table-search">
@@ -147,8 +123,8 @@ const DeliveryCharges = () => {
             className="absolute top-2.5 ml-2 text-[#444050] dark:text-[#cAcAcA]"
           />
           <input
-            onChange={(e) => setLocationFilter(e.target.value)}
-            value={locationFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+            value={nameFilter}
             className=""
             type="search"
             placeholder="Search..."
@@ -164,26 +140,26 @@ const DeliveryCharges = () => {
         <TableSkeleton />
       ) : (
         <DataTable
-          value={deliveryChargesList ?? []}
+          value={socialMediaIconsList ?? []}
           paginator
           pageLinkSize={pageToShow}
-          rows={rowsToShow}
-          filters={filterByLocation}
+          rows={rowsToShow} 
+          filters={filterByName}
           paginatorTemplate={paginatorTemplate}
           header={tableHeader}
           tableClassName="data-table"
           rowClassName={() => "data-table-row"}
         >
           <Column
-            field="location"
-            header="Location"
+            field="name"
+            header="Platform Name"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
           />
           <Column
-            field="price"
-            header="Price"
+            field="url"
+            header="URL"
             sortable
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
@@ -204,14 +180,6 @@ const DeliveryCharges = () => {
                   src={editIcon}
                   alt="Edit"
                 />
-                <Delete
-                  onClick={() => {
-                    setModalVisibility(true);
-                    setModalFor("delete");
-                    setRowData(rowData);
-                  }}
-                  className="w-[15.59px] h-[15.59px] cursor-pointer text-red-500"
-                />
               </div>
             )}
           />
@@ -223,24 +191,24 @@ const DeliveryCharges = () => {
           modalCrossAction={() => {
             setFormValidationErrors({});
           }}
-          modalTitle="Create Delivery Charge"
+          modalTitle="Add Social Media Icon"
         >
           <form
-            action={handleCreateDeliveryCharge}
+            action={handleCreateSocialMediaIcon}
             className="dark:bg-[#1e2939] form-content"
           >
             <div className="formwork-body space-y-4">
               <InputText
-                placeholder="Location"
-                name="location"
-                label="Location"
-                checkErrorField={formValidationErrors.location}
+                placeholder="Platform Name (e.g., Facebook)"
+                name="name"
+                label="Platform Name"
+                checkErrorField={formValidationErrors.name}
               />
               <InputText
-                placeholder="Price"
-                name="price"
-                label="Price"
-                checkErrorField={formValidationErrors.price}
+                placeholder="URL (e.g., https://www.facebook.com/yourpage)"
+                name="url"
+                label="URL"
+                checkErrorField={formValidationErrors.url}
               />
             </div>
             <div className="flex justify-end gap-2 mt-4 form-footer">
@@ -268,23 +236,24 @@ const DeliveryCharges = () => {
           modalCrossAction={() => {
             setFormValidationErrors({});
           }}
-          modalTitle="Update Delivery Charge"
+          modalTitle="Update Social Media Icon"
         >
-          <form action={handleUpdateDeliveryCharge}>
+          <form action={handleUpdateSocialMediaIcon}>
             <div className="space-y-4">
               <InputText
-                placeholder="Location"
-                label="Location"
-                name="location"
-                defaultValue={rowData?.location}
-                checkErrorField={formValidationErrors.location}
+                placeholder="Platform Name"
+                label="Platform Name"
+                name="name"
+                readOnly={true}
+                defaultValue={rowData?.name}
+                checkErrorField={formValidationErrors.name}
               />
               <InputText
-                placeholder="Price"
-                label="Price"
-                name="price"
-                defaultValue={rowData?.price}
-                checkErrorField={formValidationErrors.price}
+                placeholder="URL"
+                label="URL"
+                name="url"
+                defaultValue={rowData?.url}
+                checkErrorField={formValidationErrors.url}
               />
             </div>
             <div className="flex justify-end gap-2 mt-4">
@@ -306,40 +275,8 @@ const DeliveryCharges = () => {
           </form>
         </Modal>
       )}
-
-      {modalFor === "delete" && (
-        <Modal
-          modalCrossAction={() => setFormValidationErrors({})}
-          modalTitle="Deleting Delivery Charge"
-        >
-          <form action={handleDeleteDeliveryCharge}>
-            <div className="my-3 flex flex-col gap-4">
-              <h2 className="text-[#444050] dark:text-[#cAcAcA] font-bold">
-                Are You Sure!
-              </h2>
-              <h3 className="text-[#444050] dark:text-[#cAcAcA]">
-                Delivery charge for "{rowData?.location}" will be deleted
-                permanently!
-              </h3>
-            </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={() => setModalVisibility(false)}
-                className="btn-gray"
-              >
-                <X size={20} />
-                Cancel
-              </Button>
-              <Button type="submit" className="btn-danger">
-                <Delete size={20} className="mr-1" />
-                Delete
-              </Button>
-            </div>
-          </form>
-        </Modal>
-      )}
     </div>
   );
 };
 
-export default DeliveryCharges;
+export default SocialMediaSettings;

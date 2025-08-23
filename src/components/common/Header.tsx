@@ -7,14 +7,72 @@ import { Lock, Moon, Sun } from "lucide-react";
 import { useMode } from "../../hooks/useMode";
 import Dropdown from "../ui/Dropdown";
 import BreadCrumb from "./BreadCrumb";
+import { useLogout } from "../../hooks/useLogout";
+import { useSession } from "../../hooks/useSession";
+import lockIcon from "../../assets/icons/header/lock.svg";
+import lists from "../../assets/icons/header/lists.svg";
+import arrowDownWhite from "../../assets/icons/header/arrow-down-white.svg";
 
-
+type Item = {
+  id: number;
+  img: string;
+  title: string;
+  content: string;
+};
+interface sessionDataType {
+  name: string;
+  orgId: string;
+  sub: string;
+  role: string ;  
+}
 
 // ================ sample data ==========///
+const Items: Item[] = [
+  {
+    id: 1,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+  {
+    id: 2,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+  {
+    id: 3,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+  {
+    id: 4,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+  {
+    id: 5,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+  {
+    id: 6,
+    img: lockIcon,
+    title: "New Item test",
+    content: "[Item Status : Sketch Pending]",
+  },
+];
 
 
 const Header = () => {
   const [mode, toggleMode] = useMode();
+  const logout = useLogout();
+  const userData = useSession<sessionDataType>("userData");
+  
+
   return (
     <div className="bg-[#1C98D8] dark:bg-[#1e2939] text-white py-[8px] px-[24px] shadow-md rounded-md sticky top-[.5px] z-10 mb-2">
       <div className="flex justify-between items-center">
@@ -22,9 +80,10 @@ const Header = () => {
         <div className="flex gap-2 items-center">
            {<BreadCrumb  />}
         </div>
+        {/* Header Right */}
         <div className="flex gap-[20px] items-center relative">
-
-          {/* <Dropdown
+          {/* Notification Dropdown */}
+          <Dropdown
             trigger={
               <button
                 type="button"
@@ -42,9 +101,12 @@ const Header = () => {
               </button>
             }
           >
+            {/* =============== Notification Main Container ======= */}
+            {/* ========== main container ====== */}
             <div className="w-[401px] bg-white mt-1 rounded-md border border-[#DDDDDD] px-[15px] dark:bg-[#1e2939] dark:border-gray-900 shadow-lg max-h-[500px] overflow-auto scrollbar-none">
               {Array.from({ length: 10 }).map((_, index) => (
                 <div key={index} className="py-[10px]">
+                  {/* ===== Header ===== */}
                   <div className="flex justify-between mb-[5px] items-center ">
                     <div className="flex gap-x-[10px]">
                       <button className="bg-[#DDF6E8] text-[#28C76F] px-2 py-1 text-[13px] rounded-xs">
@@ -62,10 +124,12 @@ const Header = () => {
                     </p>
                   </div>
 
+                  {/* ===== Description ===== */}
                   <p className="text-[13px] text-[#6D6B77] dark:text-[#cacaca] mb-[10px]">
                     [ Desk : Mobilon Tape Mark For Getharning ]
                   </p>
 
+                  {/* ===== Requirement Info ===== */}
                   <div className="pb-[5px]">
                     <div className="flex justify-between text-[#444050] dark:text-[#cacaca] text-[13px]">
                       <p>
@@ -88,13 +152,14 @@ const Header = () => {
                     </div>
                   </div>
 
+                  {/* ===== Footer Time ===== */}
                   <p className="text-[#ACAAB1] text-[13px] text-end">
                     12hr ago
                   </p>
                 </div>
               ))}
             </div>
-          </Dropdown> */}
+          </Dropdown>
           <Button onClick={toggleMode} shadowOnHover={false}>
             {mode && mode === "dark" ? (
               <Sun className="w-6 h-6" />
@@ -116,8 +181,8 @@ const Header = () => {
                   alt="avatar"
                 />
                 <div className="text-left">
-                  <h3 className="font-semibold text-[15px]">Jhon Doe</h3>
-                  <p className="text-[13px]">Admin</p>
+                  <h3 className="font-semibold text-[15px] capitalize">{userData?.id}</h3>
+                  {/* <p className="text-[13px] capitalize">{userData?.role.toLowerCase()??""}</p> */}
                 </div>
 
                 <img src={profileArrow} alt="down_arrow" />
@@ -135,7 +200,9 @@ const Header = () => {
                   Change Password
                 </p>
               </li>
-              <li className="dark:hover:bg-gray-900  rounded hover:bg-[#F3F3F4] transaction-[.3s] py-2 cursor-pointer  px-[24px] flex gap-x-3 items-center text-[#444050] text-sm">
+              <li onClick={logout} className="cursor-pointer dark:hover:bg-gray-900  rounded hover:bg-[#F3F3F4] transaction-[.3s] py-2 cursor-pointer  px-[24px] flex gap-x-3 items-center text-[#444050] text-sm">
+                
+                
                 <img
                   src={logoutIcon}
                   alt="lock icon"

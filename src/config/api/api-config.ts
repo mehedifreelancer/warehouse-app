@@ -1,33 +1,49 @@
-import axios from 'axios';
+import Cookies from "js-cookie";
+import axios from "axios";
+import { decryptToken, isTokenExpired } from "../../utils/handleToken";
+
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    skipAuth?: boolean;
+  }
+}
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 100000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Request interceptor for adding auth token
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzU1MjU4MjI3LCJpYXQiOjE3NTUwNDIyMjd9.hcGoHXBuArsXUl2nk9ikaWjbZJAAJp6mL2rLzXVtQh8"
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
-    // const token = localStorage.getItem('authToken');
-    if (token && config.headers) {
+    if (config.skipAuth) {
+      return config; // skip adding token
+    }
+
+    const encryptedToken = Cookies.get("authToken");
+    if (!encryptedToken) {
+      window.location.href = "/auth/signin"; 
+      return Promise.reject(new Error("No auth token"));
+    }
+
+    const token = decryptToken(encryptedToken);
+    if (!token || isTokenExpired(token)) {
+      Cookies.remove("authToken");
+      sessionStorage.removeItem("userData");
+      window.location.href = "/auth/signin";
+      return Promise.reject(new Error("Token expired or invalid"));
+    }
+
+    if (config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
-
-// Response interceptor for handling responses
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     // Handle errors globally
-//     return Promise.reject(error);
-//   }
-// );
 
 export default api;
