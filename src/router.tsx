@@ -34,7 +34,7 @@ import SignIn from "./pages/auth/SignIn";
 import SocialMediaSettings from "./pages/site-settings/SocialMediaSettings";
 import DeliveryCharges from "./pages/order/DeliveryCharges";
 import Orders from "./pages/order/Orders";
-import Customer from "./services/customer/Customer";
+import Customers from "./pages/customer/Customer";
 
 export const router = createBrowserRouter([
   {
@@ -95,7 +95,7 @@ export const router = createBrowserRouter([
       {
         path: "/customer",
         children: [
-          {index: true, element: <Customer /> },
+          {index: true, element: <Customers /> },
         ],
       },
 

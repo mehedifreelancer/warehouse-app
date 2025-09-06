@@ -1,7 +1,43 @@
 
 import { toastCustom } from '../../components/ui/CustomToast';
 import api from '../../config/api/api-config';
-import type { CustomersResponse, Customer } from '../../types/customer/customer.types';
+import type { Customer, CreateCustomerPayload, UpdateCustomerPayload, CustomersResponse } from '../../types/customer/customer.types';
+
+export const createCustomer = async (payload: CreateCustomerPayload): Promise<Customer> => {
+  try {
+    const response = await api.post<Customer>('/customers/', payload);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error?.response?.data?.message || 'Failed to create customer.';
+    
+    toastCustom({
+      title: "Creation Failed",
+      message: errorMessage,
+      type: "error",
+    });
+    
+    console.error('Error creating customer:', error);
+    throw error;
+  }
+};
+
+export const updateCustomer = async (id: number, payload: UpdateCustomerPayload): Promise<Customer> => {
+  try {
+    const response = await api.put<Customer>(`/customers/${id}/`, payload);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error?.response?.data?.message || `Failed to update customer with ID ${id}.`;
+    
+    toastCustom({
+      title: "Update Failed",
+      message: errorMessage,
+      type: "error",
+    });
+    
+    console.error('Error updating customer:', error);
+    throw error;
+  }
+};
 
 export const getAllCustomers = async (page?: number): Promise<CustomersResponse> => {
   try {
