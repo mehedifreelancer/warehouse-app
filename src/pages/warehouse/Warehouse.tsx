@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dropdown } from "primereact/dropdown";
-import editIcon from "../../../assets/icons/Table/edit.svg";
 import Modal from "../../components/common/Modal";
 import { GlobalContext } from "../../layouts/RootLayout";
 import Button from "../../components/ui/Button";
+
 import TableSkeleton from "../../components/shared/skeletons/TableSkeleton";
 import InputText from "../../components/ui/input/InputText";
 import {
