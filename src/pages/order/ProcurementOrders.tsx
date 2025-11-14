@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dropdown } from "primereact/dropdown";
 import Modal from "../../components/common/Modal";
 import { GlobalContext } from "../../layouts/RootLayout";
 import editIcon from "../../assets/icons/Table/edit.svg";
@@ -17,7 +16,6 @@ import { Eye, Plus, Save, Search, X } from "lucide-react";
 import type { Order, OrdersResponse } from "../../types/order/Orders.types";
 import {
   createOrder,
-  getOrder,
   getOrders,
   getSingleOrder,
   updateOrder,
@@ -30,7 +28,10 @@ import SearchableSelect from "../../components/ui/select/SearchableSelect";
 import { getProducts } from "../../services/products/product.service";
 import type { Product } from "../../types/products/product.types";
 import { toastCustom } from "../../components/ui/CustomToast";
-import { getAllAddresses, type Address } from "../../services/address/address.service";
+import {
+  getAllAddresses,
+  type Address,
+} from "../../services/address/address.service";
 import { getAllCustomers } from "../../services/customer/customer.service";
 import type { Customer } from "../../types/customer/customer.types";
 
@@ -43,47 +44,51 @@ const statusOptions = [
   { id: 6, label: "Cancelled", value: "cancelled" },
 ];
 
-// Status options for the filter dropdown
-const statusFilterOptions = [
-  { label: "All Status", value: null },
-  { label: "Pending", value: "pending" },
-  { label: "In Procurement", value: "in_procurement" },
-  { label: "Processing", value: "processing" },
-  { label: "Shipped", value: "shipped" },
-  { label: "Delivered", value: "delivered" },
-  { label: "Cancelled", value: "cancelled" },
-];
-
 const paymentMethodOptions = [
   { id: 1, label: "Cash on Delivery", value: "COD" },
   { id: 2, label: "Online Payment", value: "online" },
   { id: 3, label: "Bank Transfer", value: "bank_transfer" },
 ];
 
-const Orders = () => {
+const ProcurementOrders = () => {
   const [ordersList, setOrdersList] = useState<Order[] | null>(null);
-  const [ordersResponse, setOrdersResponse] = useState<OrdersResponse | null>(null);
+  const [ordersResponse, setOrdersResponse] = useState<OrdersResponse | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
   const [orderIdFilter, setOrderIdFilter] = useState<string>("");
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string | null>(null);
   const [modalFor, setModalFor] = useState<string>("");
   const [rowData, setRowData] = useState<Order | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [reloadData, setReload] = useState<boolean>(false);
   const { setModalVisibility } = useContext<any>(GlobalContext);
-  const [formValidationErrors, setFormValidationErrors] = useState<Record<string, string[]>>({});
+  const [formValidationErrors, setFormValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [productList, setProductList] = useState<Product[] | null>(null);
   const [addressList, setAddressList] = useState<Address[] | null>(null);
   const [customerList, setCustomerList] = useState<Customer[] | null>(null);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
-  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null
+  );
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
+    null
+  );
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<
+    number | null
+  >(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    string | null
+  >(null);
   const [isPaid, setIsPaid] = useState<boolean>(false);
-  const [selectedProductItems, setSelectedProductItems] = useState<{product_item: number, quantity: number, product_name: string}[]>([]);
-  const [updateProductItems, setUpdateProductItems] = useState<{product_item: number, quantity: number, product_name: string}[]>([]);
+  const [selectedProductItems, setSelectedProductItems] = useState<
+    { product_item: number; quantity: number; product_name: string }[]
+  >([]);
+  const [updateProductItems, setUpdateProductItems] = useState<
+    { product_item: number; quantity: number; product_name: string }[]
+  >([]);
 
   // Format customer for display
   const formatCustomerLabel = (customer: Customer) => {
@@ -94,15 +99,15 @@ const Orders = () => {
     order_id: { value: orderIdFilter, matchMode: "contains" as const },
   };
 
-  const fetchOrders = async (page: number = 1, status: string | null = null) => {
+  const fetchPendingOrders = async (page: number = 1) => {
     setLoading(true);
     try {
-      const ordersRes = await getOrders(page, status || undefined);
+      const ordersRes = await getOrders(page, "shipped");
       setOrdersResponse(ordersRes);
       setOrdersList(ordersRes.results);
     } catch (error) {
-      console.error("Failed to fetch orders:", error);
-      setError("Failed to fetch orders.");
+      console.error("Failed to fetch pending orders:", error);
+      setError("Failed to fetch pending orders.");
     } finally {
       setLoading(false);
     }
@@ -115,15 +120,15 @@ const Orders = () => {
         const [productsRes, addressesRes, customersRes] = await Promise.all([
           getProducts(1, 100),
           getAllAddresses(),
-          getAllCustomers(1, 100)
+          getAllCustomers(1, 100),
         ]);
-        
+
         setProductList(productsRes.results);
         setAddressList(addressesRes);
         setCustomerList(customersRes.results);
-        
-        // Fetch orders with current filters
-        await fetchOrders(currentPage, selectedStatusFilter);
+
+        // Fetch pending orders
+        await fetchPendingOrders(currentPage);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         setError("Failed to fetch data.");
@@ -134,15 +139,10 @@ const Orders = () => {
     fetchInitialData();
   }, [reloadData]);
 
-  // Effect for pagination and filter changes
+  // Effect for pagination changes
   useEffect(() => {
-    fetchOrders(currentPage, selectedStatusFilter);
-  }, [currentPage, selectedStatusFilter]);
-
-  const handleStatusFilterChange = (value: string | null) => {
-    setSelectedStatusFilter(value);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
+    fetchPendingOrders(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     if (modalFor === "update" && rowData) {
@@ -151,12 +151,12 @@ const Orders = () => {
       setSelectedStatus(rowData.status);
       setSelectedPaymentMethod(rowData.payment_method);
       setIsPaid(rowData.is_paid);
-      
+
       // Initialize update product items
-      const itemsWithNames = rowData.order_items.map(item => ({
+      const itemsWithNames = rowData.order_items.map((item) => ({
         product_item: item.product_item,
         quantity: item.quantity,
-        product_name: `Product #${item.product_item}`
+        product_name: `Product #${item.product_item}`,
       }));
       setUpdateProductItems(itemsWithNames);
     }
@@ -171,10 +171,10 @@ const Orders = () => {
       status: selectedStatus,
       additional_note: formData.get("additional_note") as string,
       is_paid: isPaid,
-      order_items: selectedProductItems.map(item => ({
+      order_items: selectedProductItems.map((item) => ({
         product_item: item.product_item,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+      })),
     };
 
     const validation = orderFormSchema.safeParse(formFields);
@@ -211,10 +211,10 @@ const Orders = () => {
       status: selectedStatus,
       additional_note: formData.get("additional_note") as string,
       is_paid: isPaid,
-      order_items: updateProductItems.map(item => ({
+      order_items: updateProductItems.map((item) => ({
         product_item: item.product_item,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+      })),
     };
 
     const validation = orderUpdateFormSchema.safeParse(formFields);
@@ -252,33 +252,36 @@ const Orders = () => {
 
   const addProductItem = (isUpdateModal = false) => {
     if (selectedProductId) {
-      const itemsArray = isUpdateModal ? updateProductItems : selectedProductItems;
-      
+      const itemsArray = isUpdateModal
+        ? updateProductItems
+        : selectedProductItems;
+
       // Check if product is already added
       const isProductAlreadyAdded = itemsArray.some(
-        item => item.product_item === selectedProductId
+        (item) => item.product_item === selectedProductId
       );
-      
+
       if (isProductAlreadyAdded) {
         toastCustom({
           title: "Product Already Added",
-          message: "This product has already been added to the order. You can update the quantity instead.",
+          message:
+            "This product has already been added to the order. You can update the quantity instead.",
           type: "warning",
         });
         return;
       }
-      
-      const product = productList?.find(p => p.id === selectedProductId);
-      const newItem = { 
-        product_item: selectedProductId, 
+
+      const product = productList?.find((p) => p.id === selectedProductId);
+      const newItem = {
+        product_item: selectedProductId,
         quantity: 1,
-        product_name: product?.name || `Product #${selectedProductId}`
+        product_name: product?.name || `Product #${selectedProductId}`,
       };
-      
+
       if (isUpdateModal) {
-        setUpdateProductItems(prev => [...prev, newItem]);
+        setUpdateProductItems((prev) => [...prev, newItem]);
       } else {
-        setSelectedProductItems(prev => [...prev, newItem]);
+        setSelectedProductItems((prev) => [...prev, newItem]);
       }
       setSelectedProductId(null);
     }
@@ -286,22 +289,26 @@ const Orders = () => {
 
   const removeProductItem = (index: number, isUpdateModal = false) => {
     if (isUpdateModal) {
-      setUpdateProductItems(prev => prev.filter((_, i) => i !== index));
+      setUpdateProductItems((prev) => prev.filter((_, i) => i !== index));
     } else {
-      setSelectedProductItems(prev => prev.filter((_, i) => i !== index));
+      setSelectedProductItems((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
-  const updateProductItemQuantity = (index: number, quantity: number, isUpdateModal = false) => {
+  const updateProductItemQuantity = (
+    index: number,
+    quantity: number,
+    isUpdateModal = false
+  ) => {
     if (quantity < 1) return;
-    
+
     if (isUpdateModal) {
-      setUpdateProductItems(prev => 
-        prev.map((item, i) => i === index ? { ...item, quantity } : item)
+      setUpdateProductItems((prev) =>
+        prev.map((item, i) => (i === index ? { ...item, quantity } : item))
       );
     } else {
-      setSelectedProductItems(prev => 
-        prev.map((item, i) => i === index ? { ...item, quantity } : item)
+      setSelectedProductItems((prev) =>
+        prev.map((item, i) => (i === index ? { ...item, quantity } : item))
       );
     }
   };
@@ -320,7 +327,9 @@ const Orders = () => {
       }[rowData.status] || "bg-gray-100 text-gray-800";
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}
+      >
         {rowData.status.replace("_", " ").toUpperCase()}
       </span>
     );
@@ -328,59 +337,51 @@ const Orders = () => {
 
   const paidStatusBodyTemplate = (rowData: Order) => {
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${rowData.is_paid ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          rowData.is_paid
+            ? "bg-green-100 text-green-800"
+            : "bg-red-100 text-red-800"
+        }`}
+      >
         {rowData.is_paid ? "PAID" : "UNPAID"}
       </span>
     );
   };
 
   const customerBodyTemplate = (rowData: Order) => {
-    const customer = customerList?.find(c => c.id === rowData.customer);
-    return customer ? formatCustomerLabel(customer) : `Customer #${rowData.customer}`;
+    const customer = customerList?.find((c) => c.id === rowData.customer);
+    return customer
+      ? formatCustomerLabel(customer)
+      : `Customer #${rowData.customer}`;
   };
 
   const tableHeader = (
     <div className="data-table-header">
-      <div className="data-table-heading">Orders List</div>
-      <div className="flex gap-2 items-center">
-        <div className="flex gap-2">
-          <Button
-            className="btn-bordered"
-            onClick={() => {
-              setModalVisibility(true);
-              setModalFor("create");
-            }}
-          >
-            <Plus size={16} className="mr-1" />
-            Add Order
-          </Button>
+      <div className="data-table-heading">Pending Orders</div>
+      <div className="flex gap-2">
+        <Button
+          className="btn-bordered"
+          onClick={() => {
+            setModalVisibility(true);
+            setModalFor("create");
+          }}
+        >
+          <Plus size={16} className="mr-1" />
+          Add Order
+        </Button>
 
-          <div className="relative table-search">
-            <Search
-              size={18}
-              className="absolute top-2.5 ml-2 text-[#444050] dark:text-[#cAcAcA]"
-            />
-            <input
-              onChange={(e) => setOrderIdFilter(e.target.value)}
-              value={orderIdFilter}
-              className=""
-              type="search"
-              placeholder="Search by Order ID..."
-            />
-          </div>
-        </div>
-
-        {/* Status Filter Dropdown */}
-        <div className="flex items-center gap-2">
-          <Dropdown
-            value={selectedStatusFilter}
-            options={statusFilterOptions}
-            onChange={(e) => handleStatusFilterChange(e.value)}
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Filter by Status"
-            className="w-48"
-            clearIcon={<X size={14} />}
+        <div className="relative table-search">
+          <Search
+            size={18}
+            className="absolute top-2.5 ml-2 text-[#444050] dark:text-[#cAcAcA]"
+          />
+          <input
+            onChange={(e) => setOrderIdFilter(e.target.value)}
+            value={orderIdFilter}
+            className=""
+            type="search"
+            placeholder="Search by Order ID..."
           />
         </div>
       </div>
@@ -485,7 +486,6 @@ const Orders = () => {
         </DataTable>
       )}
 
-      {/* Rest of your modal code remains the same */}
       {modalFor === "create" && (
         <Modal
           modalCrossAction={() => {
@@ -517,14 +517,14 @@ const Orders = () => {
                 placeholder="Select customer"
                 checkErrorField={formValidationErrors.customer}
               />
-              
+
               <InputText
                 placeholder="0.00"
                 name="delivery_charge"
                 label="Delivery Charge"
                 checkErrorField={formValidationErrors.delivery_charge}
               />
-              
+
               <SearchableSelect
                 name="shipping_address"
                 label="Shipping Address"
@@ -536,7 +536,7 @@ const Orders = () => {
                 placeholder="Select shipping address"
                 checkErrorField={formValidationErrors.shipping_address}
               />
-              
+
               <SearchableSelect
                 name="payment_method"
                 label="Payment Method"
@@ -548,7 +548,7 @@ const Orders = () => {
                 placeholder="Select payment method"
                 checkErrorField={formValidationErrors.payment_method}
               />
-              
+
               <SearchableSelect
                 name="status"
                 label="Status"
@@ -560,7 +560,7 @@ const Orders = () => {
                 placeholder="Select status"
                 checkErrorField={formValidationErrors.status}
               />
-                <InputText
+              <InputText
                 placeholder="Additional notes..."
                 name="additional_note"
                 label="Additional Note"
@@ -584,7 +584,7 @@ const Orders = () => {
 
             <div className="pt-4 mt-4">
               <h3 className="font-medium mb-2">Order Items</h3>
-              
+
               <div className="flex gap-2 mb-4">
                 <SearchableSelect
                   className="flex-1"
@@ -598,8 +598,8 @@ const Orders = () => {
                   placeholder="Select a product"
                   checkErrorField={formValidationErrors.order_items}
                 />
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   className="btn-primary self-end mb-1"
                   onClick={() => addProductItem(false)}
                   disabled={!selectedProductId}
@@ -611,20 +611,31 @@ const Orders = () => {
               {selectedProductItems.length > 0 && (
                 <div className="space-y-2">
                   {selectedProductItems.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 border rounded">
-                      <span className="flex-1 font-medium">{item.product_name}</span>
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 p-2 border rounded"
+                    >
+                      <span className="flex-1 font-medium">
+                        {item.product_name}
+                      </span>
                       <div className="flex items-center gap-1">
                         <label className="text-sm text-gray-600">Qty:</label>
                         <InputText
                           type="number"
                           min="1"
                           value={item.quantity}
-                          onChange={(e) => updateProductItemQuantity(index, Number(e.target.value), false)}
+                          onChange={(e) =>
+                            updateProductItemQuantity(
+                              index,
+                              Number(e.target.value),
+                              false
+                            )
+                          }
                           className="w-16"
                         />
                       </div>
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         className="btn-danger"
                         onClick={() => removeProductItem(index, false)}
                       >
@@ -635,7 +646,7 @@ const Orders = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="flex justify-end gap-2 mt-4 form-footer">
               <Button
                 className="btn-gray"
@@ -654,10 +665,7 @@ const Orders = () => {
                 <X size={20} />
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                className="btn-primary"
-              >
+              <Button type="submit" className="btn-primary">
                 <Save size={20} className="mr-1" />
                 Create
               </Button>
@@ -666,7 +674,6 @@ const Orders = () => {
         </Modal>
       )}
 
-      {/* Update and View modals remain the same */}
       {modalFor === "update" && rowData && (
         <Modal
           modalCrossAction={() => {
@@ -676,7 +683,170 @@ const Orders = () => {
           size="lg"
         >
           <form action={handleUpdateOrder}>
-            {/* ... update modal content remains the same ... */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SearchableSelect
+                label="Customer"
+                options={customerList ?? []}
+                value={selectedCustomerId}
+                onChange={(val) => setSelectedCustomerId(val)}
+                formatOptionLabel={formatCustomerLabel}
+                valueKey="id"
+                placeholder="Select customer"
+                checkErrorField={formValidationErrors.customer}
+              />
+
+              <InputText
+                placeholder="0.00"
+                label="Delivery Charge"
+                name="delivery_charge"
+                defaultValue={rowData.delivery_charge}
+                checkErrorField={formValidationErrors.delivery_charge}
+              />
+
+              <SearchableSelect
+                label="Shipping Address"
+                options={addressList ?? []}
+                value={selectedShippingAddressId}
+                onChange={(val) => setSelectedShippingAddressId(val)}
+                labelKey="street_address"
+                valueKey="id"
+                placeholder="Select shipping address"
+                checkErrorField={formValidationErrors.shipping_address}
+              />
+
+              <SearchableSelect
+                label="Payment Method"
+                options={paymentMethodOptions}
+                value={selectedPaymentMethod}
+                onChange={(val) => setSelectedPaymentMethod(val)}
+                labelKey="label"
+                valueKey="value"
+                placeholder="Select payment method"
+                checkErrorField={formValidationErrors.payment_method}
+              />
+
+              <SearchableSelect
+                label="Status"
+                options={statusOptions}
+                value={selectedStatus}
+                onChange={(val) => setSelectedStatus(val)}
+                labelKey="label"
+                valueKey="value"
+                placeholder="Select status"
+                checkErrorField={formValidationErrors.status}
+              />
+              <InputText
+                placeholder="Additional notes..."
+                label="Additional Note"
+                name="additional_note"
+                defaultValue={rowData.additional_note}
+                checkErrorField={formValidationErrors.additional_note}
+              />
+            </div>
+
+            <div className="mt-4 flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_paid_update"
+                name="is_paid"
+                checked={isPaid}
+                onChange={(e) => setIsPaid(e.target.checked)}
+                className="h-4 w-4 rounded focus:ring-indigo-500"
+              />
+              <label htmlFor="is_paid_update" className="text-sm text-gray-700">
+                Is Paid
+              </label>
+            </div>
+
+            <div className="pt-4 mt-4 ">
+              <h3 className="font-medium mb-2">Order Items</h3>
+
+              <div className="flex gap-2 mb-4">
+                <SearchableSelect
+                  className="flex-1"
+                  label="Select Product"
+                  options={productList ?? []}
+                  value={selectedProductId}
+                  onChange={(val) => setSelectedProductId(val)}
+                  labelKey="name"
+                  valueKey="id"
+                  placeholder="Select a product"
+                />
+                <Button
+                  type="button"
+                  className="btn-primary self-end mb-1"
+                  onClick={() => addProductItem(true)}
+                  disabled={!selectedProductId}
+                >
+                  <Plus size={16} />
+                </Button>
+              </div>
+
+              {updateProductItems.length > 0 && (
+                <div className="space-y-2">
+                  {updateProductItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 p-2 border rounded"
+                    >
+                      <span className="flex-1 font-medium">
+                        {item.product_name}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <label className="text-sm text-gray-600">Qty:</label>
+                        <InputText
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            updateProductItemQuantity(
+                              index,
+                              Number(e.target.value),
+                              true
+                            )
+                          }
+                          className="w-16"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        className="btn-danger"
+                        onClick={() => removeProductItem(index, true)}
+                      >
+                        <X size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                onClick={() => {
+                  setModalVisibility(false);
+                  setFormValidationErrors({});
+                }}
+                className="btn-gray"
+              >
+                <X size={20} />
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="btn-success"
+                disabled={
+                  updateProductItems.length === 0 ||
+                  !selectedCustomerId ||
+                  !selectedShippingAddressId ||
+                  !selectedStatus ||
+                  !selectedPaymentMethod
+                }
+              >
+                <Save size={20} className="mr-1" />
+                Update
+              </Button>
+            </div>
           </form>
         </Modal>
       )}
@@ -687,11 +857,90 @@ const Orders = () => {
           modalTitle={`Order Details - ${rowData.order_id}`}
           size="lg"
         >
-          {/* ... view modal content remains the same ... */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-medium text-gray-700">Order ID</h3>
+                <p className="text-gray-900">{rowData.order_id}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Customer ID</h3>
+                <p className="text-gray-900">{rowData.customer}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Total Price</h3>
+                <p className="text-gray-900">৳{rowData.total_price}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Delivery Charge</h3>
+                <p className="text-gray-900">৳{rowData.delivery_charge}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Payment Method</h3>
+                <p className="text-gray-900">{rowData.payment_method}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Payment Status</h3>
+                <p className="text-gray-900">
+                  {rowData.is_paid ? "Paid" : "Unpaid"}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Status</h3>
+                <p className="text-gray-900">
+                  {rowData.status.replace("_", " ").toUpperCase()}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-700">Date Placed</h3>
+                <p className="text-gray-900">
+                  {new Date(rowData.date_placed).toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {rowData.additional_note && (
+              <div className="p-3 bg-gray-50 rounded">
+                <h3 className="font-medium text-gray-700">Additional Note</h3>
+                <p className="text-gray-900">{rowData.additional_note}</p>
+              </div>
+            )}
+
+            <div>
+              <h3 className="font-medium text-gray-700 mb-2">Order Items</h3>
+              <div className="border rounded divide-y">
+                {rowData.order_items.map((item) => (
+                  <div key={item.id} className="p-3 grid grid-cols-3 gap-4">
+                    <div>
+                      <span className="text-gray-700">Product ID:</span>{" "}
+                      {item.product_item}
+                    </div>
+                    <div>
+                      <span className="text-gray-700">Quantity:</span>{" "}
+                      {item.quantity}
+                    </div>
+                    <div>
+                      <span className="text-gray-700">Price:</span> ৳
+                      {item.price}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              onClick={() => setModalVisibility(false)}
+              className="btn-gray"
+            >
+              <X size={20} />
+              Close
+            </Button>
+          </div>
         </Modal>
       )}
     </div>
   );
 };
 
-export default Orders;
+export default ProcurementOrders;

@@ -35,6 +35,9 @@ import SocialMediaSettings from "./pages/site-settings/SocialMediaSettings";
 import DeliveryCharges from "./pages/order/DeliveryCharges";
 import Orders from "./pages/order/Orders";
 import Customers from "./pages/customer/Customer";
+import PendingOrders from "./pages/order/PendingOrders";
+import ProcessingOrders from "./pages/order/ProcessingOrders";
+import ShippedOrders from "./pages/order/ShippedOrders";
 
 export const router = createBrowserRouter([
   {
@@ -59,7 +62,17 @@ export const router = createBrowserRouter([
         path: "order",
         children: [
           { path: "delivery-charges", element: <DeliveryCharges /> },
-          { path: "orders", element: <Orders/> },
+          {
+            // element: <Orders />,
+            children: [
+              { path: "pending-orders", element: <PendingOrders /> },
+              { path: "processing-orders", element: <ProcessingOrders /> },
+              { path: "in-procurement-orders", element: <Orders /> },
+              { path: "delivered-orders", element: <Orders /> },
+              { path: "shipped-orders", element: <ShippedOrders /> },
+              { path: "cancelled-orders", element: <Orders /> },
+            ],
+          },
         ],
       },
 
@@ -88,15 +101,13 @@ export const router = createBrowserRouter([
           { path: "brand-items", element: <BrandItems /> },
           { path: "main-sites", element: <MainSite /> },
           { path: "sliders", element: <Sliders /> },
-          { path: "social-media-icons", element: <SocialMediaSettings/>},
+          { path: "social-media-icons", element: <SocialMediaSettings /> },
         ],
       },
 
       {
         path: "/customer",
-        children: [
-          {index: true, element: <Customers /> },
-        ],
+        children: [{ index: true, element: <Customers /> }],
       },
 
       {

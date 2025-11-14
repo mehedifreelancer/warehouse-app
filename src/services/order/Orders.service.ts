@@ -3,9 +3,20 @@ import api from "../../config/api/api-config";
 import type { CreateOrderPayload, Order, OrdersResponse, UpdateOrderPayload } from "../../types/order/Orders.types";
 
 
-export const getOrders = async (page?: number): Promise<OrdersResponse> => {
+// In your Orders.service.ts
+
+export const getOrders = async (page?: number, status?: string): Promise<OrdersResponse> => {
   try {
-    const url = page ? `/order/orders/?page=${page}` : '/order/orders/';
+    let url = '/order/orders/';
+    const params = new URLSearchParams();
+    
+    if (page) params.append('page', page.toString());
+    if (status) params.append('status', status);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
     const response = await api.get<OrdersResponse>(url);
     return response.data;
   } catch (error: any) {

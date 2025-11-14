@@ -58,9 +58,53 @@ export const menuBar: MenuBar = [
       {
         id: "orders",
         menuName: "Orders",
-        hasSubMenu: false,
-        path: "/order/orders",
+        hasSubMenu: true,
+        path: "#",
         iconName: "sketch-library.svg",
+        submenu: [
+          {
+            id: "pending",
+            menuName: "Pending",
+            hasSubMenu: false,
+            path: "/order/pending-orders",
+            iconName: "iot-device.svg",
+          },
+          {
+            id: "processing",
+            menuName: "Processing",
+            hasSubMenu: false,
+            path: "/order/processing-orders",
+            iconName: "iot-device.svg",
+          },
+          {
+            id: "in_prourement",
+            menuName: "In Procurement",
+            hasSubMenu: false,
+            path: "/order/inprocurement-orders",
+            iconName: "iot-device.svg",
+          },
+          {
+            id: "shipped",
+            menuName: "Shipped",
+            hasSubMenu: false,
+            path: "/order/shipped-orders",
+            iconName: "iot-device.svg",
+          },
+          {
+            id: "delivered",
+            menuName: "Delivered",
+            hasSubMenu: false,
+            path: "/order/delivered-orders",
+            iconName: "iot-device.svg",
+          },
+          {
+            id: "cacelled",
+            menuName: "Cancelled",
+            hasSubMenu: false,
+            path: "/order/cancelled-orders",
+            iconName: "iot-device.svg",
+          },
+        ],
       },
     ],
   },
@@ -108,7 +152,7 @@ export const menuBar: MenuBar = [
         path: "products/product-items",
         iconName: "kanban-requisition-review.svg",
       },
-      
+
       {
         id: "kanban-color-size-selection",
         menuName: "Products",
@@ -116,7 +160,6 @@ export const menuBar: MenuBar = [
         path: "products/product-list",
         iconName: "kanban-color-size-selection.svg",
       },
-      
     ],
   },
   {
@@ -198,8 +241,6 @@ export const menuBar: MenuBar = [
         path: "/warehouse/warehouse-list",
         iconName: "QMS-dashboard.svg",
       },
-
     ],
   },
-
 ];
