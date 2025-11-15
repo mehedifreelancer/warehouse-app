@@ -32,12 +32,15 @@ import PublicRoute from "./middleware/PublicRoute";
 // Auth pages (example: signin/signup)
 import SignIn from "./pages/auth/SignIn";
 import SocialMediaSettings from "./pages/site-settings/SocialMediaSettings";
-import DeliveryCharges from "./pages/order/DeliveryCharges";
-import Orders from "./pages/order/Orders";
+import DeliveryCharges from "./pages/orders/DeliveryCharges";
 import Customers from "./pages/customer/Customer";
-import PendingOrders from "./pages/order/PendingOrders";
-import ProcessingOrders from "./pages/order/ProcessingOrders";
-import ShippedOrders from "./pages/order/ShippedOrders";
+import PendingOrders from "./pages/orders/NewOrders";
+import ProcessingOrders from "./pages/orders/ProcessingOrders";
+import ReadyToShippedOrders from "./pages/orders/ReadyToShippedOrders";
+import ProcurementOrders from "./pages/orders/ProcurementOrders";
+import NewOrders from "./pages/orders/NewOrders";
+import AddOrder from "./pages/orders/AddOrder";
+import DeliveredOrders from "./pages/orders/DeliveredOrders";
 
 export const router = createBrowserRouter([
   {
@@ -59,18 +62,20 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "order",
+        path: "orders",
         children: [
-          { path: "delivery-charges", element: <DeliveryCharges /> },
           {
-            // element: <Orders />,
             children: [
-              { path: "pending-orders", element: <PendingOrders /> },
+              { path: "add-order", element: <AddOrder /> },
+              { path: "new-orders", element: <NewOrders /> },
               { path: "processing-orders", element: <ProcessingOrders /> },
-              { path: "in-procurement-orders", element: <Orders /> },
-              { path: "delivered-orders", element: <Orders /> },
-              { path: "shipped-orders", element: <ShippedOrders /> },
-              { path: "cancelled-orders", element: <Orders /> },
+              { path: "in-procurement-orders", element: <ProcurementOrders /> },
+              { path: "delivered-orders", element: <DeliveredOrders /> },
+              {
+                path: "ready-to-ship-orders",
+                element: <ReadyToShippedOrders />,
+              },
+              // { path: "cancelled-orders", element: <Orders /> },
             ],
           },
         ],
@@ -102,6 +107,7 @@ export const router = createBrowserRouter([
           { path: "main-sites", element: <MainSite /> },
           { path: "sliders", element: <Sliders /> },
           { path: "social-media-icons", element: <SocialMediaSettings /> },
+          { path: "delivery-charges", element: <DeliveryCharges /> },
         ],
       },
 

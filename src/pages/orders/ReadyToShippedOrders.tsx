@@ -12,7 +12,7 @@ import {
   paginatorTemplate,
   rowsToShow,
 } from "../../config/data-table/dataTableConfig";
-import { Eye, Plus, Save, Search, X } from "lucide-react";
+import { Eye, Plus, Printer, Save, Search, X } from "lucide-react";
 import type { Order, OrdersResponse } from "../../types/order/Orders.types";
 import {
   createOrder,
@@ -50,7 +50,7 @@ const paymentMethodOptions = [
   { id: 3, label: "Bank Transfer", value: "bank_transfer" },
 ];
 
-const PendingOrders = () => {
+const ReadyToShippedOrders = () => {
   const [ordersList, setOrdersList] = useState<Order[] | null>(null);
   const [ordersResponse, setOrdersResponse] = useState<OrdersResponse | null>(
     null
@@ -102,7 +102,7 @@ const PendingOrders = () => {
   const fetchPendingOrders = async (page: number = 1) => {
     setLoading(true);
     try {
-      const ordersRes = await getOrders(page, "pending");
+      const ordersRes = await getOrders(page, "shipped");
       setOrdersResponse(ordersRes);
       setOrdersList(ordersRes.results);
     } catch (error) {
@@ -358,8 +358,18 @@ const PendingOrders = () => {
 
   const tableHeader = (
     <div className="data-table-header">
-      <div className="data-table-heading">New Orders</div>
+      <div className="data-table-heading">Pending Orders</div>
       <div className="flex gap-2">
+        <Button
+          className="btn-bordered"
+          // onClick={() => {
+          //   setModalVisibility(true);
+          //   setModalFor("create");
+          // }}
+        >
+          <Printer size={16} className="mr-1" />
+          Print
+        </Button>
         <Button
           className="btn-bordered"
           onClick={() => {
@@ -465,26 +475,11 @@ const PendingOrders = () => {
             headerClassName="data-table-column-header"
             bodyClassName="data-table-column-body"
             body={(rowData) => (
-              // <div className="flex gap-4">
-              //   <Eye
-              //     onClick={() => handleViewOrder(rowData.id)}
-              //     className="w-5 h-5 cursor-pointer text-blue-500"
-              //   />
-              //   <img
-              //     onClick={() => {
-              //       setModalVisibility(true);
-              //       setModalFor("update");
-              //       setRowData(rowData);
-              //     }}
-              //     className="w-4 h-4 cursor-pointer"
-              //     src={editIcon}
-              //     alt="Edit"
-              //   />
-              // </div>
               <div className="flex gap-2">
-                <Button className="btn-success !text-xs">Confirm</Button>
-                <Button className="btn-danger !text-xs">Suspend</Button>
-                <Button className="btn-gray !text-xs">Cancel</Button>
+                <Button className="btn-success">
+                  {" "}
+                  Handed Over To Courior{" "}
+                </Button>
               </div>
             )}
           />
@@ -948,4 +943,4 @@ const PendingOrders = () => {
   );
 };
 
-export default PendingOrders;
+export default ReadyToShippedOrders;
