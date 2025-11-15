@@ -64,7 +64,7 @@ export const menuBar: MenuBar = [
         submenu: [
           {
             id: "pending",
-            menuName: "Pending",
+            menuName: "New",
             hasSubMenu: false,
             path: "/order/pending-orders",
             iconName: "iot-device.svg",
